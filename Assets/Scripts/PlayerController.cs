@@ -125,5 +125,8 @@ public class PlayerController : MonoBehaviour
 		else if (Input.GetKey(KeyCode.RightArrow)) {
 			ani.SetTrigger("dodgeRight");
 		}
+		else if (Input.GetKey(KeyCode.DownArrow)) {
+			ani.SetTrigger("dodgeDown");
+		}
 	}
 }
