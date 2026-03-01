@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
 	public OpponentController opponent;
+
+	private SpriteRenderer spr;
+	private Animator ani;
 
 	[Header("Player Position")]
 	public bool center = true;
@@ -15,6 +18,12 @@ public class PlayerController : MonoBehaviour
 	
 	[Header("Player State")]
 	public bool actionable = true; // can begin an action or interrupt currently performing action
+
+	void Awake()
+	{
+		spr = GetComponent<SpriteRenderer>();
+		ani = GetComponent<Animator>();
+	}
 
 	void beginPunch() {	// play punch animation
 
@@ -66,13 +75,55 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	void debug() { // update debug UI
-		// something with boxes on the canvas
+	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color hurtColor = new(.93f, .25f, .25f, 1f);
+	Vector3 flat = new(.2f, .2f, 0.01f);
+	private void OnDrawGizmos() {
+		if (!spr) {spr = GetComponent<SpriteRenderer>();}
+		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);
+		Vector3 above = new Vector3(0, spr.bounds.extents.y + .5f, 0);
+
+		// Center
+		Gizmos.color = center ? activeColor : inactiveColor;
+		Gizmos.DrawCube(above, flat);
+		if (opponent.hitCenter) {
+			Gizmos.color = hurtColor;
+			Gizmos.DrawCube(above - transform.forward*.01f, flat*0.6f);
+		}
+
+		// Low
+		Gizmos.color = low ? activeColor : inactiveColor;
+		Gizmos.DrawCube(above - transform.up*.25f, flat);
+		if (opponent.hitLow) {
+			Gizmos.color = hurtColor;
+			Gizmos.DrawCube(above - transform.up*.25f - transform.forward*.01f, flat*0.6f);
+		}
+
+		// Left
+		Gizmos.color = left ? activeColor : inactiveColor;
+		Gizmos.DrawCube(above - transform.right*.25f, flat);
+		if (opponent.hitLeft) {
+			Gizmos.color = hurtColor;
+			Gizmos.DrawCube(above - transform.right*.25f - transform.forward*.01f, flat*0.6f);
+		}
+
+		// Right
+		Gizmos.color = right ? activeColor : inactiveColor;
+		Gizmos.DrawCube(above + transform.right*.25f, flat);
+		if (opponent.hitRight) {
+			Gizmos.color = hurtColor;
+			Gizmos.DrawCube(above + transform.right*.25f - transform.forward*.01f, flat*0.6f);
+		}
 	}
 
 	void Update() {
 		// take inputs
+		if (!actionable) return;
 
-		debug();
+		if (Input.GetKey(KeyCode.LeftArrow)) {
+			ani.SetTrigger("dodgeLeft");
+		} 
+		else if (Input.GetKey(KeyCode.RightArrow)) {
+			ani.SetTrigger("dodgeRight");
+		}
 	}
 }
