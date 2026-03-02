@@ -67,6 +67,34 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	private void startPunch(bool right) {
+		bool jab = Input.GetKey(KeyCode.UpArrow);
+		ani.SetTrigger(
+			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
+		);
+	}
+
+	void Update() {
+
+		if (!actionable) return;
+
+		if (Input.GetKey(KeyCode.LeftArrow)) {
+			ani.SetTrigger("dodgeLeft");
+		} 
+		else if (Input.GetKey(KeyCode.RightArrow)) {
+			ani.SetTrigger("dodgeRight");
+		}
+		else if (Input.GetKey(KeyCode.DownArrow)) {
+			ani.SetTrigger("dodgeDown");
+		}
+		else if (Input.GetKey(KeyCode.Z)) {
+			startPunch(false);
+		}
+		else if (Input.GetKey(KeyCode.X)) {
+			startPunch(true);
+		}
+	}
+
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color hurtColor = new(.93f, .25f, .25f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f);
 	private void OnDrawGizmos() {
@@ -104,34 +132,6 @@ public class PlayerController : MonoBehaviour
 		if (opponent.hitRight) {
 			Gizmos.color = hurtColor;
 			Gizmos.DrawCube(above + transform.right*.25f - transform.forward*.01f, flat*0.6f);
-		}
-	}
-
-	private void startPunch(bool right) {
-		bool jab = Input.GetKey(KeyCode.UpArrow);
-		ani.SetTrigger(
-			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
-		);
-	}
-
-	void Update() {
-
-		if (!actionable) return;
-
-		if (Input.GetKey(KeyCode.LeftArrow)) {
-			ani.SetTrigger("dodgeLeft");
-		} 
-		else if (Input.GetKey(KeyCode.RightArrow)) {
-			ani.SetTrigger("dodgeRight");
-		}
-		else if (Input.GetKey(KeyCode.DownArrow)) {
-			ani.SetTrigger("dodgeDown");
-		}
-		else if (Input.GetKey(KeyCode.Z)) {
-			startPunch(false);
-		}
-		else if (Input.GetKey(KeyCode.X)) {
-			startPunch(true);
 		}
 	}
 }
