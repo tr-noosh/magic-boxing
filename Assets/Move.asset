@@ -15,4 +15,4 @@ MonoBehaviour:
   animation: {fileID: 0}
   maxHits: 4
   maxTime: 5
-  phaseWeights: 000000000000000000000000
+  phaseWeights: 32000000280000001e000000

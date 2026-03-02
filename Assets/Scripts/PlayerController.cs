@@ -25,16 +25,8 @@ public class PlayerController : MonoBehaviour
 		ani = GetComponent<Animator>();
 	}
 
-	void beginPunch() {	// play punch animation
-
-	}
-
-	void beginDodge() { // play dodge animation
-
-	}
-
 	void miss() { }
-	void blocked() { }
+	void blocked() { } 
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
 		bool highPunch = false;
@@ -57,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
 		if (highPunch) { // JAB
 			if (!opponent.high) { miss(); }
-			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { blocked(); }
+			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch);
@@ -66,7 +58,7 @@ public class PlayerController : MonoBehaviour
 		}
 		else { // HOOK
 			if (!opponent.low) { miss(); }
-			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { blocked(); }
+			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch);
@@ -80,7 +72,7 @@ public class PlayerController : MonoBehaviour
 	private void OnDrawGizmos() {
 		if (!spr) {spr = GetComponent<SpriteRenderer>();}
 		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);
-		Vector3 above = new Vector3(0, spr.bounds.extents.y + .5f, 0);
+		Vector3 above = new Vector3(0, spr.bounds.extents.y + .25f, 0);
 
 		// Center
 		Gizmos.color = center ? activeColor : inactiveColor;
@@ -115,8 +107,15 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	private void startPunch(bool right) {
+		bool jab = Input.GetKey(KeyCode.UpArrow);
+		ani.SetTrigger(
+			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
+		);
+	}
+
 	void Update() {
-		// take inputs
+
 		if (!actionable) return;
 
 		if (Input.GetKey(KeyCode.LeftArrow)) {
@@ -127,6 +126,12 @@ public class PlayerController : MonoBehaviour
 		}
 		else if (Input.GetKey(KeyCode.DownArrow)) {
 			ani.SetTrigger("dodgeDown");
+		}
+		else if (Input.GetKey(KeyCode.Z)) {
+			startPunch(false);
+		}
+		else if (Input.GetKey(KeyCode.X)) {
+			startPunch(true);
 		}
 	}
 }

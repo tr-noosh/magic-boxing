@@ -295,7 +295,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1645927943}
-  moveList: []
+  moveList:
+  - {fileID: 0}
   hitCenter: 0
   hitLow: 0
   hitLeft: 0

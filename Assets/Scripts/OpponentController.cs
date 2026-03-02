@@ -38,23 +38,50 @@ public class OpponentController : MonoBehaviour
 
 	public BlockType blocking = BlockType.NONE;
 
+	public int hitsLeft = 4;
+	public float stunTime = 10.0f;
+
+	public bool stunned = true;
+
 	void Awake()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
 	}
 
-	public void damage(bool highPunch, bool rightPunch) {} // opponent taking damage. interrupt attacks and play animations
+	public void damage(bool highPunch, bool rightPunch) {	// opponent taking damage. interrupt attacks and play animations
+		blocking = BlockType.NONE;
+		hitsLeft--;
+		stunned = (hitsLeft > 0);
+		if (hitsLeft <= 0) { stunTime = 0.0f; }
+		ani.SetBool("stunned", stunned);
+		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
+		
+	} 
+	public void block(bool highPunch, bool rightPunch) {}
 
+	
+	void Update() {
+		if (stunned) {
+			if (stunTime > 0.0f) {
+				stunned = true;
+				stunTime -= Time.deltaTime;
+			} else {
+				stunned = false;
+			}
+		}
+		ani.SetBool("stunned", stunned);
+		// randomization
+
+
+	}
 
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color blockColor = new(.8f, .8f, .3f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f); Vector3 flatWide = new(.8f, .12f, 0.01f);
 	private void OnDrawGizmos() {
 		if (!spr) {spr = GetComponent<SpriteRenderer>();}
-			
-		
 		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);
-		Vector3 above = new Vector3(0, spr.bounds.extents.y + .5f, 0);
+		Vector3 above = new Vector3(0, spr.bounds.extents.y + .25f, 0);
 
 		// Center
 		Gizmos.color = center && high ? activeColor : inactiveColor;
@@ -82,11 +109,5 @@ public class OpponentController : MonoBehaviour
 		if (blocking == BlockType.HIGH || blocking == BlockType.ALL) {
 			Gizmos.DrawCube(above - transform.forward*.01f, flatWide);
 		}
-	}
-
-	void Update() {
-		// randomization
-
-
 	}
 }
