@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
 	void miss() { }
 	void blocked() { } 
+	public void damaged(string zone = "center") { } 
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
 		bool highPunch = false;

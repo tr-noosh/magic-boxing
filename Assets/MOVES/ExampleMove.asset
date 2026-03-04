@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
-  m_Name: Move
+  m_Name: ExampleMove
   m_EditorClassIdentifier: 
-  animation: {fileID: 0}
-  maxHits: 4
-  maxTime: 5
-  phaseWeights: 32000000280000001e000000
+  triggerName: attackExample
+  maxHits: 6
+  maxTime: 12
+  phaseWeights: 64000000140000001e000000

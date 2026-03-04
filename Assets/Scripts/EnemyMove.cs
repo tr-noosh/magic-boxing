@@ -18,7 +18,7 @@ public static class RandomMove
 {
 	public static EnemyMove SelectMove(EnemyMove[] moves, int phase)
 	{
-		int total = moves.Sum(move => move.phaseWeights[phase]);
+		int total = moves.Sum((move) => move.phaseWeights[phase]);
 		int randNum = Random.Range(0, total-1);
 
 		foreach (EnemyMove move in moves) {

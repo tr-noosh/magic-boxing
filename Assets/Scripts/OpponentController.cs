@@ -38,10 +38,12 @@ public class OpponentController : MonoBehaviour
 
 	public BlockType blocking = BlockType.NONE;
 
-	public int hitsLeft = 4;
+	public int hitsRemaining = 4;
 	public float stunTime = 10.0f;
 
-	public bool stunned = true;
+	public bool stunned = false;
+	public bool finalHit = false;
+	public bool success = false;
 
 	void Awake()
 	{
@@ -51,30 +53,67 @@ public class OpponentController : MonoBehaviour
 
 	public void damage(bool highPunch, bool rightPunch) {	// opponent taking damage. interrupt attacks and play animations
 		blocking = BlockType.NONE;
-		hitsLeft--;
-		stunned = (hitsLeft > 0);
-		if (hitsLeft <= 0) { stunTime = 0.0f; }
+		hitsRemaining--;
+		if (hitsRemaining > 0 && stunTime > 0.0f) {
+			stunned = true;
+			Debug.Log("gorp");
+		}
+		if (hitsRemaining == 1) { finalHit = true; }
+		if (hitsRemaining <= 0) { stunTime = 0.0f; }
 		ani.SetBool("stunned", stunned);
+		ani.SetBool("final", finalHit);
 		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
-		
 	} 
 	public void block(bool highPunch, bool rightPunch) {}
 
+	private void checkHitting() {
+		if (player.center && hitCenter) {
+			success = true;
+			player.damaged("center");
+		}
+		else if (player.low && hitLow) {
+			success = true;
+			player.damaged("low");
+		}
+		else if (player.left && hitLeft) {
+			success = true;
+			player.damaged("left");
+		}
+		else if (player.right && hitRight) {
+			success = true;
+			player.damaged("right");
+		}
+		ani.SetBool("success", success);
+	}
+
+	public void chooseMove() {
+		success = false;
+		ani.SetBool("success", success);
+		finalHit = false;
+		ani.SetBool("final", finalHit);
+		int phase = 0;
+
+		EnemyMove move = RandomMove.SelectMove(moveList, phase);
+
+		hitsRemaining = move.maxHits;
+		stunTime = move.maxTime;
+		if (move.triggerName != "") ani.SetTrigger(move.triggerName);
+		
+	}
 	
 	void Update() {
 		if (stunned) {
-			if (stunTime > 0.0f) {
-				stunned = true;
-				stunTime -= Time.deltaTime;
-			} else {
+			if (stunTime > 0.0f) { stunTime -= Time.deltaTime; } 
+			else {
 				stunned = false;
+				ani.SetBool("stunned", stunned);
+				Debug.Log("prog");
 			}
 		}
-		ani.SetBool("stunned", stunned);
-		// randomization
 
-
+		checkHitting();
 	}
+
 
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color blockColor = new(.8f, .8f, .3f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f); Vector3 flatWide = new(.8f, .12f, 0.01f);

@@ -296,7 +296,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1645927943}
   moveList:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 6e6e369605c605f418aa39f9389683f3, type: 2}
+  - {fileID: 11400000, guid: 43aacadae5138d24cbb6e11f69df8553, type: 2}
   hitCenter: 0
   hitLow: 0
   hitLeft: 0
@@ -307,9 +308,11 @@ MonoBehaviour:
   low: 1
   high: 1
   blocking: 0
-  hitsLeft: 4
+  hitsRemaining: 4
   stunTime: 6
-  stunned: 1
+  stunned: 0
+  finalHit: 0
+  success: 0
 --- !u!4 &450346913
 Transform:
   m_ObjectHideFlags: 0
