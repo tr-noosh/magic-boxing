@@ -32,8 +32,8 @@ public class PlayerController : MonoBehaviour
 
 	void miss() { }
 	void blocked() { } 
-	public void damaged(string zone = "center") {
-		health -= 1;
+	public void damaged(string zone, int damage) {
+		health -= damage;
 		healthBar.value = health / (float)startingHealth;
 	} 
 

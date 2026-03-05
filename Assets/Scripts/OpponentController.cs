@@ -41,6 +41,8 @@ public class OpponentController : MonoBehaviour
 	public int hitsRemaining = 4;
 	public float stunTime = 10.0f;
 
+	public int currentMoveDamage = 0;
+
 	public bool stunned = false;
 	public bool finalHit = false;
 	public bool success = false;
@@ -69,19 +71,19 @@ public class OpponentController : MonoBehaviour
 	private void checkHitting() {
 		if (player.center && hitCenter) {
 			success = true;
-			player.damaged("center");
+			player.damaged("center", currentMoveDamage);
 		}
 		else if (player.low && hitLow) {
 			success = true;
-			player.damaged("low");
+			player.damaged("low", currentMoveDamage);
 		}
 		else if (player.left && hitLeft) {
 			success = true;
-			player.damaged("left");
+			player.damaged("left", currentMoveDamage);
 		}
 		else if (player.right && hitRight) {
 			success = true;
-			player.damaged("right");
+			player.damaged("right", currentMoveDamage);
 		}
 		ani.SetBool("success", success);
 	}
@@ -97,6 +99,7 @@ public class OpponentController : MonoBehaviour
 
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
+		currentMoveDamage = move.damageOnHit;
 		if (move.triggerName != "") ani.SetTrigger(move.triggerName);
 		
 	}
