@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
 	public OpponentController opponent;
+
+	public Slider healthBar;
 
 	private SpriteRenderer spr;
 	private Animator ani;
@@ -30,7 +33,8 @@ public class PlayerController : MonoBehaviour
 	void miss() { }
 	void blocked() { } 
 	public void damaged(string zone = "center") {
-	
+		health -= 1;
+		healthBar.value = health / (float)startingHealth;
 	} 
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
