@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum BlockType : int
 {
@@ -16,6 +17,8 @@ public enum BlockType : int
 public class OpponentController : MonoBehaviour
 {
 	public PlayerController player;
+
+	public Slider healthBar;
 
 	private SpriteRenderer spr;
 	private Animator ani;
@@ -43,6 +46,9 @@ public class OpponentController : MonoBehaviour
 
 	public int currentMoveDamage = 0;
 
+	public int health = 20;
+	public int startingHealth = 20;
+
 	public bool stunned = false;
 	public bool finalHit = false;
 	public bool success = false;
@@ -53,8 +59,11 @@ public class OpponentController : MonoBehaviour
 		ani = GetComponent<Animator>();
 	}
 
-	public void damage(bool highPunch, bool rightPunch) {	// opponent taking damage. interrupt attacks and play animations
-		blocking = BlockType.NONE;
+	public void damage(bool highPunch, bool rightPunch) {   // opponent taking damage. interrupt attacks and play animations
+        health -= 1;
+        healthBar.value = health / (float)startingHealth;
+
+        blocking = BlockType.NONE;
 		hitsRemaining--;
 		if (hitsRemaining > 0 && stunTime > 0.0f) {
 			stunned = true;
