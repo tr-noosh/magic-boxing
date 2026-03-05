@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
 	
 	[Header("Player State")]
 	public bool actionable = true; // can begin an action or interrupt currently performing action
+	public bool invincible = false; // temporarily immune to further damage
 	public int startingHealth = 20;
 	public int health = 20; 
 
@@ -35,6 +36,7 @@ public class PlayerController : MonoBehaviour
 	public void damaged(string zone, int damage) {
 		health -= damage;
 		healthBar.value = health / (float)startingHealth;
+		ani.SetTrigger("stun");
 	} 
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
@@ -111,8 +113,15 @@ public class PlayerController : MonoBehaviour
 		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);
 		Vector3 above = new Vector3(0, spr.bounds.extents.y + .25f, 0);
 
-		// Center
-		Gizmos.color = center ? activeColor : inactiveColor;
+		// Actionability indicator
+        if (!actionable)
+        {
+            Gizmos.color = new(0, 0, 0, .7f);
+            Gizmos.DrawCube(above - transform.up * .125f, flat * 4f);
+        }
+
+        // Center
+        Gizmos.color = center ? activeColor : inactiveColor;
 		Gizmos.DrawCube(above, flat);
 		if (opponent.hitCenter) {
 			Gizmos.color = hurtColor;
@@ -142,5 +151,12 @@ public class PlayerController : MonoBehaviour
 			Gizmos.color = hurtColor;
 			Gizmos.DrawCube(above + transform.right*.25f - transform.forward*.01f, flat*0.6f);
 		}
+
+		// Invincibility indicator
+        if (invincible)
+		{
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawCube(above - transform.up * .125f, flat * 3f);
+        }
 	}
 }

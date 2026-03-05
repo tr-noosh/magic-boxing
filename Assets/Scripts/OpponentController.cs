@@ -78,23 +78,30 @@ public class OpponentController : MonoBehaviour
 	public void block(bool highPunch, bool rightPunch) {}
 
 	private void checkHitting() {
-		if (player.center && hitCenter) {
-			success = true;
-			player.damaged("center", currentMoveDamage);
+		if (!player.invincible)
+		{
+			if (player.center && hitCenter)
+			{
+				success = true;
+				player.damaged("center", currentMoveDamage);
+			}
+			else if (player.low && hitLow)
+			{
+				success = true;
+				player.damaged("low", currentMoveDamage);
+			}
+			else if (player.left && hitLeft)
+			{
+				success = true;
+				player.damaged("left", currentMoveDamage);
+			}
+			else if (player.right && hitRight)
+			{
+				success = true;
+				player.damaged("right", currentMoveDamage);
+			}
+			ani.SetBool("success", success);
 		}
-		else if (player.low && hitLow) {
-			success = true;
-			player.damaged("low", currentMoveDamage);
-		}
-		else if (player.left && hitLeft) {
-			success = true;
-			player.damaged("left", currentMoveDamage);
-		}
-		else if (player.right && hitRight) {
-			success = true;
-			player.damaged("right", currentMoveDamage);
-		}
-		ani.SetBool("success", success);
 	}
 
 	public void chooseMove() {
