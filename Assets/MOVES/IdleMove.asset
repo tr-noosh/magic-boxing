@@ -15,4 +15,5 @@ MonoBehaviour:
   triggerName: 
   maxHits: 0
   maxTime: 0
+  damageOnHit: 0
   phaseWeights: 5a0000004b00000032000000

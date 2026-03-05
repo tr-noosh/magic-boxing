@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
 	
 	[Header("Player State")]
 	public bool actionable = true; // can begin an action or interrupt currently performing action
+	public int startingHealth = 20;
+	public int health = 20; 
 
 	void Awake()
 	{
@@ -27,7 +29,9 @@ public class PlayerController : MonoBehaviour
 
 	void miss() { }
 	void blocked() { } 
-	public void damaged(string zone = "center") { } 
+	public void damaged(string zone = "center") {
+	
+	} 
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
 		bool highPunch = false;

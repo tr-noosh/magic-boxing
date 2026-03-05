@@ -15,4 +15,5 @@ MonoBehaviour:
   triggerName: attackExample
   maxHits: 6
   maxTime: 12
+  damageOnHit: 2
   phaseWeights: 64000000140000001e000000
