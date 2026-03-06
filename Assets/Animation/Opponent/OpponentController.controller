@@ -609,7 +609,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: example attack
+  m_Name: centre punch
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1068,7 +1068,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: example attack miss
+  m_Name: centre punch miss
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1220,7 +1220,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: example attack return
+  m_Name: centre punch return
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
