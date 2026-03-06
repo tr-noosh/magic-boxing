@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OneTwoPunch
   m_EditorClassIdentifier: 
   triggerName: oneTwoPunch
-  maxHits: 4
-  maxTime: 5
-  damageOnHit: 1
-  phaseWeights: 320000005000000078000000
+  maxHits: 6
+  maxTime: 12
+  damageOnHit: 5
+  phaseWeights: 460000005000000078000000

@@ -750,6 +750,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 43aacadae5138d24cbb6e11f69df8553, type: 2}
   - {fileID: 11400000, guid: bd9c5269ad35ee64ca05d61286c2f07e, type: 2}
   - {fileID: 11400000, guid: 929f38cc6eff9f24688957034eed0571, type: 2}
+  - {fileID: 11400000, guid: 3751b153471fb7543ad7dcc609895251, type: 2}
   hitCenter: 0
   hitLow: 0
   hitLeft: 0
