@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class PlayerController : MonoBehaviour
 	private SpriteRenderer spr;
 	private Animator ani;
 
+	public TextMeshProUGUI scoreText;
+
 	[Header("Player Position")]
 	public bool center = true;
 	public bool low = true;
@@ -22,8 +25,16 @@ public class PlayerController : MonoBehaviour
 	[Header("Player State")]
 	public bool actionable = true; // can begin an action or interrupt currently performing action
 	public bool invincible = false; // temporarily immune to further damage
-	public int startingHealth = 20;
-	public int health = 20; 
+	public int knockouts = 0;
+	public int roundKOs = 0;
+	public bool knockedOut = false;
+	public float koTimer = 0.0f;
+	public float getupProgress = 0.0f;
+
+	[Header("Stats")]
+	public float maxHealth = 100.0f;
+	public float health = 100.0f;
+	public float damageStat = 5.0f;
 
 	void Awake()
 	{
@@ -33,9 +44,9 @@ public class PlayerController : MonoBehaviour
 
 	void miss() { }
 	void blocked() { } 
-	public void damaged(string zone, int damage) {
+	public void damaged(string zone, float damage) {
 		health -= damage;
-		healthBar.value = health / (float)startingHealth;
+		healthBar.value = health / maxHealth;
 		ani.SetTrigger("stun");
 	} 
 
@@ -61,18 +72,18 @@ public class PlayerController : MonoBehaviour
 		if (highPunch) { // JAB
 			if (!opponent.high) { miss(); }
 			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
-			else if (opponent.center) { opponent.damage(highPunch, rightPunch); }
+			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
-				opponent.damage(highPunch, rightPunch);
+				opponent.damage(highPunch, rightPunch, damageStat);
 			}
 			else { miss(); }
 		}
 		else { // HOOK
 			if (!opponent.low) { miss(); }
 			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
-			else if (opponent.center) { opponent.damage(highPunch, rightPunch); }
+			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
-				opponent.damage(highPunch, rightPunch);
+				opponent.damage(highPunch, rightPunch, damageStat);
 			}
 			else { miss(); }
 		}
@@ -86,6 +97,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	void Update() {
+		updateScoreText();
 
 		if (!actionable) return;
 
@@ -104,6 +116,12 @@ public class PlayerController : MonoBehaviour
 		else if (Input.GetKey(KeyCode.X)) {
 			startPunch(true);
 		}
+	}
+
+	void updateScoreText() {
+		string playerTxt = ( roundKOs == 2 ? "<color=\"red\">2</color>" : roundKOs.ToString());
+		string opponentTxt = ( opponent.roundKOs == 2 ? "<color=\"red\">2</color>" : opponent.roundKOs.ToString());
+		scoreText.text = playerTxt + "-" + opponentTxt;
 	}
 
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color hurtColor = new(.93f, .25f, .25f, 1f);

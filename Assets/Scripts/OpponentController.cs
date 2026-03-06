@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Unity.VisualScripting;
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public enum BlockType : int
 {
@@ -43,25 +42,48 @@ public class OpponentController : MonoBehaviour
 
 	public int hitsRemaining = 4;
 	public float stunTime = 10.0f;
+	public float currentMoveDamage = 0.0f;
 
-	public int currentMoveDamage = 0;
-
-	public int health = 20;
-	public int startingHealth = 20;
+	public float maxHealth = 100.0f;
+	public float health = 100.0f;
+	public int knockouts = 0;
+	public int roundKOs = 0;
+	public int phase = 0;
 
 	public bool stunned = false;
 	public bool finalHit = false;
+
+	public bool knockedOut = false;
+	public float koTimer = 0.0f;
+	public float getupTime = 30.0f;
+	public TextMeshProUGUI koText;
+	private Animator koAni;
+
 	public bool success = false;
 
 	void Awake()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
+		koAni = koText.gameObject.GetComponent<Animator>();
 	}
 
-	public void damage(bool highPunch, bool rightPunch) {   // opponent taking damage. interrupt attacks and play animations
-        health -= 1;
-        healthBar.value = health / (float)startingHealth;
+	private void knockout() {
+		//knockedOut = true; // set by animation
+		roundKOs++;
+		knockouts++;
+		phase = Math.Max(2, knockouts); // phase # maxes out at 3
+		
+		ani.SetTrigger("KO");
+		getupTime = Random.Range(1,4) + 2.0f*knockouts;
+	}
+
+	public void damage(bool highPunch, bool rightPunch, float damage) {   // opponent taking damage. interrupt attacks and play animations
+        health -= damage;
+
+		if (health <= 0.0f) {
+			knockout(); return;
+		}
 
         blocking = BlockType.NONE;
 		hitsRemaining--;
@@ -109,7 +131,6 @@ public class OpponentController : MonoBehaviour
 		ani.SetBool("success", success);
 		finalHit = false;
 		ani.SetBool("final", finalHit);
-		int phase = 0;
 
 		EnemyMove move = RandomMove.SelectMove(moveList, phase);
 
@@ -120,13 +141,43 @@ public class OpponentController : MonoBehaviour
 		
 	}
 	
+	private int lastNumber = 0;
 	void Update() {
+		healthBar.value = health / maxHealth;
 		if (stunned) {
 			if (stunTime > 0.0f) { stunTime -= Time.deltaTime; } 
 			else {
 				stunned = false;
 				ani.SetBool("stunned", stunned);
-				Debug.Log("prog");
+			}
+		}
+		if (knockedOut) {
+			koTimer += Time.deltaTime;
+			int countNum = (int)Math.Floor(koTimer);
+			if (roundKOs == 3) {
+				koText.text = "TKO";
+				koAni.SetTrigger("TKO");
+				// TKO!!! end game
+				// try deactivating the script itself so no funny logic happens
+				enabled = false;
+				return;
+			}
+			else if (koTimer >= getupTime) {
+				knockedOut = false;
+				ani.SetTrigger("RISE");
+				health = 70.0f; // something
+				koTimer = 0.0f;
+				lastNumber = 0;
+			}
+			else if (koTimer >= 11.0f) {
+				koText.text = "KO!";
+				koAni.SetTrigger("KO");
+				// its over, knockout!!
+			}
+			else if (countNum < 11 && countNum > lastNumber && countNum < getupTime) {
+				lastNumber = countNum;
+				koText.text = countNum.ToString();
+				koAni.SetTrigger("count");
 			}
 		}
 

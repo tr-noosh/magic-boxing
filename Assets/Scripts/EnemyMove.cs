@@ -11,7 +11,7 @@ public class EnemyMove : ScriptableObject
 	public int maxHits = 4; // maximum amount of hits you can get in while enemy is stunned when you dodge them and counterhit
 	public float maxTime = 5.0f; // maximum amount of time the enemy will be stunned for if you dont hit them instead
 
-	public int damageOnHit = 1; // How much damage to deal to player on successful hit
+	public float damageOnHit = 5.0f; // How much damage to deal to player on successful hit
 
 	public int[] phaseWeights = { 0, 0, 0 };
 }
