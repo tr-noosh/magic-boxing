@@ -20,7 +20,10 @@ public class OpponentController : MonoBehaviour
 	public Slider healthBar;
 
 	private SpriteRenderer spr;
-	private Animator ani;
+
+	public GameObject enemy;
+
+    private Animator ani;
 
 	public EnemyMove[] moveList;
 
@@ -86,6 +89,7 @@ public class OpponentController : MonoBehaviour
 		}
 
         blocking = BlockType.NONE;
+
 		hitsRemaining--;
 		if (hitsRemaining > 0 && stunTime > 0.0f) {
 			stunned = true;
@@ -95,6 +99,7 @@ public class OpponentController : MonoBehaviour
 		if (hitsRemaining <= 0) { stunTime = 0.0f; }
 		ani.SetBool("stunned", stunned);
 		ani.SetBool("final", finalHit);
+
 		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
 	} 
 	public void block(bool highPunch, bool rightPunch) {}
@@ -127,6 +132,7 @@ public class OpponentController : MonoBehaviour
 	}
 
 	public void chooseMove() {
+
 		success = false;
 		ani.SetBool("success", success);
 		finalHit = false;
@@ -137,51 +143,87 @@ public class OpponentController : MonoBehaviour
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
 		currentMoveDamage = move.damageOnHit;
-		if (move.triggerName != "") ani.SetTrigger(move.triggerName);
-		
-	}
-	
-	private int lastNumber = 0;
-	void Update() {
-		healthBar.value = health / maxHealth;
-		if (stunned) {
-			if (stunTime > 0.0f) { stunTime -= Time.deltaTime; } 
-			else {
-				stunned = false;
-				ani.SetBool("stunned", stunned);
+		if (move.triggerName != null)
+		{
+			if (move.playRandomFromList > 0)
+			{
+				ani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
+
 			}
-		}
-		if (knockedOut) {
-			koTimer += Time.deltaTime;
-			int countNum = (int)Math.Floor(koTimer);
-			if (roundKOs == 3) {
-				koText.text = "TKO";
-				koAni.SetTrigger("TKO");
-				// TKO!!! end game
-				// try deactivating the script itself so no funny logic happens
-				enabled = false;
-				return;
-			}
-			else if (koTimer >= getupTime) {
-				knockedOut = false;
-				ani.SetTrigger("RISE");
-				health = 70.0f; // something
-				koTimer = 0.0f;
-				lastNumber = 0;
-			}
-			else if (koTimer >= 11.0f) {
-				koText.text = "KO!";
-				koAni.SetTrigger("KO");
-				// its over, knockout!!
-			}
-			else if (countNum < 11 && countNum > lastNumber && countNum < getupTime) {
-				lastNumber = countNum;
-				koText.text = countNum.ToString();
-				koAni.SetTrigger("count");
-			}
+			else ani.SetTrigger(move.triggerName[0]);
+
+
 		}
 
-		checkHitting();
+    }
+	
+	private int lastNumber = 0;
+
+	void Update() {
+
+
+		if (player.gameState == 1)
+		{
+            spr.enabled = true;
+            enemy.SetActive(true);
+            healthBar.enabled = false;
+
+
+            healthBar.value = health / maxHealth;
+			if (stunned)
+			{
+				if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
+				else
+				{
+					stunned = false;
+					ani.SetBool("stunned", stunned);
+				}
+			}
+			if (knockedOut)
+			{
+				koTimer += Time.deltaTime;
+				int countNum = (int)Math.Floor(koTimer);
+				if (roundKOs == 3)
+				{
+					koText.text = "TKO";
+					koAni.SetTrigger("TKO");
+					// TKO!!! end game
+					// try deactivating the script itself so no funny logic happens
+					enabled = false;
+					return;
+				}
+				else if (koTimer >= getupTime)
+				{
+					knockedOut = false;
+					ani.SetTrigger("RISE");
+					health = 70.0f; // something
+					koTimer = 0.0f;
+					lastNumber = 0;
+				}
+				else if (koTimer >= 11.0f)
+				{
+					koText.text = "KO!";
+					koAni.SetTrigger("KO");
+					// its over, knockout!!
+				}
+				else if (countNum < 11 && countNum > lastNumber && countNum < getupTime)
+				{
+					lastNumber = countNum;
+					koText.text = countNum.ToString();
+					koAni.SetTrigger("count");
+				}
+			}
+            checkHitting();
+		}
+		else
+		{
+
+			spr.enabled = false;
+             healthBar.enabled = false;
+            enemy.SetActive(false);
+
+        }
+		
 	}
 
 

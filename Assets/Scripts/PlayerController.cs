@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,9 +14,14 @@ public class PlayerController : MonoBehaviour
 	public Slider healthBar;
 
 	private SpriteRenderer spr;
-	private Animator ani;
+    public GameObject gloves;
+
+    private Animator ani;
 
 	public TextMeshProUGUI scoreText;
+
+	public int gameState = 1;  
+
 
 	[Header("Player Position")]
 	public bool center = true;
@@ -36,7 +43,28 @@ public class PlayerController : MonoBehaviour
 	public float health = 100.0f;
 	public float damageStat = 5.0f;
 
-	void Awake()
+	[Header("mappings n whatnot")]
+
+    public KeyCode left_punch = KeyCode.D;
+    public KeyCode right_punch = KeyCode.K;
+
+    public KeyCode left_dodge = KeyCode.C;
+    public KeyCode right_dodge = KeyCode.M;
+    public KeyCode low_dodge = KeyCode.Space; 
+
+    //   public KeyCode left_dodge = KeyCode.RightArrow;
+    //public KeyCode right_dodge = KeyCode.LeftArrow;
+    //public KeyCode low_dodge = KeyCode.DownArrow;
+
+
+    public bool jabHold = false;
+
+    public KeyCode left_jab = KeyCode.S;
+    public KeyCode right_jab = KeyCode.L;
+
+	
+
+    void Awake()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
@@ -89,34 +117,102 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	private void startPunch(bool right) {
-		bool jab = Input.GetKey(KeyCode.UpArrow);
-		ani.SetTrigger(
-			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
-		);
+	private void startPunch(bool right)
+	{
+			bool jab = Input.GetKey(left_jab);
+			ani.SetTrigger(
+				(right ? "right" : "left") + (jab ? "Jab" : "Hook")
+			);
+		
 	}
 
-	void Update() {
-		updateScoreText();
+	void Update()
+	{
+		if (gameState == 1)
+		{
+			scoreText.enabled = true;
+			healthBar.enabled = true;
+			ani.enabled = true;
+			gloves.SetActive(true);
 
-		if (!actionable) return;
+			updateScoreText();
 
-		if (Input.GetKey(KeyCode.LeftArrow)) {
-			ani.SetTrigger("dodgeLeft");
-		} 
-		else if (Input.GetKey(KeyCode.RightArrow)) {
-			ani.SetTrigger("dodgeRight");
+			if (!actionable) return;
+
+			if (Input.GetKey(left_dodge))
+			{
+				ani.SetTrigger("dodgeLeft");
+			}
+			else if (Input.GetKey(right_dodge))
+			{
+				ani.SetTrigger("dodgeRight");
+			}
+			else if (Input.GetKey(low_dodge))
+			{
+				ani.SetTrigger("dodgeDown");
+			}
+			else if (Input.GetKey(left_punch))
+			{
+				if (jabHold == true)
+				{
+					startPunch(true);
+
+				}
+				else
+				{
+
+					ani.SetTrigger(("left") + ("Hook"));
+				}
+			}
+			else if (Input.GetKey(right_punch))
+			{
+
+				if (jabHold == true)
+				{
+					startPunch(false);
+
+				}
+				else
+				{
+					ani.SetTrigger(("right") + ("Hook"));
+
+				}
+			}
+			if(jabHold == false)
+			{
+                if (Input.GetKey(left_jab))
+                {
+                    ani.SetTrigger("leftJab");
+                }
+                else if (Input.GetKey(right_jab))
+                {
+                    ani.SetTrigger("rightJab");
+                }
+
+
+            }
+
+
+
 		}
-		else if (Input.GetKey(KeyCode.DownArrow)) {
-			ani.SetTrigger("dodgeDown");
-		}
-		else if (Input.GetKey(KeyCode.Z)) {
-			startPunch(false);
-		}
-		else if (Input.GetKey(KeyCode.X)) {
-			startPunch(true);
-		}
-	}
+		else
+		{
+			scoreText.enabled = false;
+            healthBar.enabled = false;
+            ani.enabled = false;
+            gloves.SetActive(false);
+
+
+
+
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            gameState = (gameState == 1) ? 0 : 1;
+        }
+    }
 
 	void updateScoreText() {
 		string playerTxt = ( roundKOs == 2 ? "<color=\"red\">2</color>" : roundKOs.ToString());

@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
   m_Name: Sweep
   m_EditorClassIdentifier: 
-  triggerName: sweep
+  triggerName:
+  - sweep
+  playRandomFromList: 0
   maxHits: 6
   maxTime: 12
   damageOnHit: 6

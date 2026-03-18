@@ -10,10 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
-  m_Name: OneTwoPunch
+  m_Name: center_punch
   m_EditorClassIdentifier: 
-  triggerName: oneTwoPunch
+  triggerName:
+  - leftPunch
+  - rightPunch
+  playRandomFromList: 2
   maxHits: 6
   maxTime: 12
-  damageOnHit: 5
-  phaseWeights: 460000005000000078000000
+  damageOnHit: 6
+  phaseWeights: 500000004600000032000000
