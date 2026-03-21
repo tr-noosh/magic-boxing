@@ -25,7 +25,10 @@ public class OpponentController : MonoBehaviour
 
     private Animator ani;
 
-	public EnemyMove[] moveList;
+    public Animator strikeani;
+    public Animator fireani;
+
+    public EnemyMove[] moveList;
 
 	[Header("Hitting Zones")]
 	public bool hitCenter = false;
@@ -149,9 +152,14 @@ public class OpponentController : MonoBehaviour
 			{
 				ani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
 
-			}
-			else ani.SetTrigger(move.triggerName[0]);
 
+			}
+			else
+			{
+				ani.SetTrigger(move.triggerName[0]); //sends them to both but it shouldnt be an issue?
+                strikeani.SetTrigger(move.triggerName[0]);
+                fireani.SetTrigger(move.triggerName[0]);
+            }
 
 		}
 

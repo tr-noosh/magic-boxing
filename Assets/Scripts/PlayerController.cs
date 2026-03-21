@@ -1,29 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+
+
+
+
+
+
+
+
+//using System.Diagnostics;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
 	public OpponentController opponent;
 
-	public Slider healthBar;
+	public UnityEngine.UI.Slider healthBar;
 
-	private SpriteRenderer spr;
+    public GameObject ui;
+    public GameObject mui;
+
+    private SpriteRenderer spr;
     public GameObject gloves;
 
     private Animator ani;
 
 	public TextMeshProUGUI scoreText;
 
-	public int gameState = 1;  
+	public int gameState = 0;
+    public int menuState = 1;	
+    public int difficulty = 2;
 
 
-	[Header("Player Position")]
+    [Header("Player Position")]
 	public bool center = true;
 	public bool low = true;
 	public bool left = false;
@@ -62,15 +77,37 @@ public class PlayerController : MonoBehaviour
     public KeyCode left_jab = KeyCode.S;
     public KeyCode right_jab = KeyCode.L;
 
-	
+
+
+	public UnityEngine.UI.Button play;
+    public UnityEngine.UI.Button settings;
+
+	public UnityEngine.UI.Button start, easy, mid, hard; 
+
+    public GameObject difficultyMenu, startMenu, settingsMenu;
 
     void Awake()
 	{
-		spr = GetComponent<SpriteRenderer>();
-		ani = GetComponent<Animator>();
+
 	}
 
-	void miss() { }
+
+    void Start()
+    {
+        play.onClick.AddListener(PlayClick);
+        start.onClick.AddListener(StartClick);
+
+        easy.onClick.AddListener(easyClick);
+        mid.onClick.AddListener(midClick);
+        hard.onClick.AddListener(hardClick);
+
+        spr = GetComponent<SpriteRenderer>();
+        ani = GetComponent<Animator>();
+
+        menuUpdate();
+    }
+
+    void miss() { }
 	void blocked() { } 
 	public void damaged(string zone, float damage) {
 		health -= damage;
@@ -130,10 +167,9 @@ public class PlayerController : MonoBehaviour
 	{
 		if (gameState == 1)
 		{
-			scoreText.enabled = true;
-			healthBar.enabled = true;
-			ani.enabled = true;
-			gloves.SetActive(true);
+            ui.SetActive(true);
+            mui.SetActive(false);
+            gloves.SetActive(true);
 
 			updateScoreText();
 
@@ -197,12 +233,11 @@ public class PlayerController : MonoBehaviour
 		}
 		else
 		{
-			scoreText.enabled = false;
-            healthBar.enabled = false;
-            ani.enabled = false;
+            ui.SetActive(false);
+            mui.SetActive(true);
             gloves.SetActive(false);
 
-
+			menu();
 
 
         }
@@ -214,7 +249,94 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-	void updateScoreText() {
+	void menu()
+	{
+
+   
+        ////play.clicked += Click("play");
+
+        // settings.clicked += Click("settings");
+
+    }
+
+	/* void Click(string button)
+     {
+
+         switch (button)
+         {
+             case "play":
+                 Debug.Log("play");
+                 break;
+             case settings:
+                 Debug.Log("settoings!");
+                 break;
+         }
+
+         Debug.Log("Clicked!");
+
+     } */
+
+	void PlayClick()
+	{
+		Debug.Log("play button clicked");
+
+		if (menuState == 1)
+		{
+			menuState = 2;
+		}
+
+		menuUpdate();
+
+	}
+
+	void menuUpdate()
+	{
+        startMenu.SetActive(false);
+        difficultyMenu.SetActive(false);
+        settingsMenu.SetActive(false);
+
+        switch (menuState)
+        {
+            case 1:
+                startMenu.SetActive(true);
+                break;
+            case 2:
+                difficultyMenu.SetActive(true);
+                break;
+            case 3:
+                settingsMenu.SetActive(true);
+                break;
+
+		
+        }
+    }
+
+
+
+
+	  void StartClick()
+    {
+        Debug.Log("start game button");
+
+        if (menuState == 2)
+        {
+            gameState = 1;
+        }
+
+    menuUpdate();
+		}
+
+
+
+    void easyClick() {Debug.Log("easy"); difficulty = 1; }
+    void midClick() { Debug.Log("medium"); difficulty = 2; }
+    void hardClick() { Debug.Log("hard"); difficulty = 3; }
+
+
+
+
+
+    void updateScoreText() {
 		string playerTxt = ( roundKOs == 2 ? "<color=\"red\">2</color>" : roundKOs.ToString());
 		string opponentTxt = ( opponent.roundKOs == 2 ? "<color=\"red\">2</color>" : opponent.roundKOs.ToString());
 		scoreText.text = playerTxt + "-" + opponentTxt;
@@ -222,6 +344,7 @@ public class PlayerController : MonoBehaviour
 
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color hurtColor = new(.93f, .25f, .25f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f);
+
 	private void OnDrawGizmos() {
 		if (!spr) {spr = GetComponent<SpriteRenderer>();}
 		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);
