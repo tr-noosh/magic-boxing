@@ -30,8 +30,9 @@ public class PlayerController : MonoBehaviour
     public GameObject gloves;
 
     private Animator ani;
+    public Animator oppani;
 
-	public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI scoreText;
 
 	public int gameState = 0;
     public int menuState = 1;	
@@ -158,10 +159,13 @@ public class PlayerController : MonoBehaviour
 	{
 			bool jab = Input.GetKey(left_jab);
 			ani.SetTrigger(
-				(right ? "right" : "left") + (jab ? "Jab" : "Hook")
+				(right ? "right" : "left") + (jab ? "jab" : "hook")
 			);
-		
-	}
+		oppani.SetTrigger(
+				 (right ? "right" : "left") + ("_block")
+				 );
+
+    }
 
 	void Update()
 	{
@@ -198,7 +202,8 @@ public class PlayerController : MonoBehaviour
 				{
 
 					ani.SetTrigger(("left") + ("Hook"));
-				}
+                    oppani.SetTrigger(("left_block"));
+                }
 			}
 			else if (Input.GetKey(right_punch))
 			{
@@ -211,18 +216,20 @@ public class PlayerController : MonoBehaviour
 				else
 				{
 					ani.SetTrigger(("right") + ("Hook"));
-
-				}
+                    oppani.SetTrigger(("right_block"));
+                }
 			}
 			if(jabHold == false)
 			{
                 if (Input.GetKey(left_jab))
                 {
                     ani.SetTrigger("leftJab");
+                    oppani.SetTrigger(("left_block"));
                 }
                 else if (Input.GetKey(right_jab))
                 {
                     ani.SetTrigger("rightJab");
+                    oppani.SetTrigger(("right_block"));
                 }
 
 

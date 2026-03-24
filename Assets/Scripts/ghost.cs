@@ -6,8 +6,15 @@ public class ghost : MonoBehaviour
     public float ghostLifetime = 0.5f;
     public Color ghostColor = new Color(1f, 1f, 1f, 0.5f);
 
+    public OpponentController opponent;
+
     private float timer;
     private SpriteRenderer sr;
+
+    public float ghostSize = 0.2f;
+
+
+    public bool left, right = false;
 
     public bool ghosti = true;
 
@@ -28,6 +35,9 @@ public class ghost : MonoBehaviour
                 timer = 0f;
             }
         }
+
+        if (left == true) { opponent.left = true; }
+        if (right == true) { opponent.right = true; }
     }
 
     void SpawnGhost()
@@ -35,7 +45,7 @@ public class ghost : MonoBehaviour
         GameObject ghost = new GameObject("ghost_behind");
         ghost.transform.position = transform.position;
         ghost.transform.rotation = transform.rotation;
-        ghost.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        ghost.transform.localScale = new Vector3(ghostSize, ghostSize, ghostSize);
 
         SpriteRenderer ghostSR = ghost.AddComponent<SpriteRenderer>();
         ghostSR.sprite = sr.sprite;

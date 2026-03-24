@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
-  m_Name: low_punch
+  m_Name: flame_punch
   m_EditorClassIdentifier: 
   triggerName:
-  - lowPunch
-  playRandomFromList: 0
+  - right_flame
+  - left_flame
+  playRandomFromList: 2
   maxHits: 6
   maxTime: 12
-  damageOnHit: 5
-  phaseWeights: 0a0000005a00000050000000
+  damageOnHit: 12
+  phaseWeights: 1e0000003c00000046000000

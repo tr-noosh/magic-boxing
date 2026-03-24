@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
-  m_Name: fire_punch
+  m_Name: large_fire
   m_EditorClassIdentifier: 
   triggerName:
-  - firepunch
-  playRandomFromList: 0
-  maxHits: 1
+  - firepunch_right
+  - firepunch_left
+  playRandomFromList: 2
+  maxHits: 6
   maxTime: 10
-  damageOnHit: 10
-  phaseWeights: 9b000000190000001e000000
+  damageOnHit: 30
+  phaseWeights: 0a000000190000001e000000

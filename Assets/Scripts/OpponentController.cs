@@ -1,6 +1,8 @@
 using System;
 using TMPro;
 using UnityEngine;
+
+
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -27,6 +29,7 @@ public class OpponentController : MonoBehaviour
 
     public Animator strikeani;
     public Animator fireani;
+    public Animator cloudani;
 
     public EnemyMove[] moveList;
 
@@ -67,12 +70,15 @@ public class OpponentController : MonoBehaviour
 
 	public bool success = false;
 
+
 	void Awake()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
 		koAni = koText.gameObject.GetComponent<Animator>();
-	}
+
+        ani.enabled = false;
+    }
 
 	private void knockout() {
 		//knockedOut = true; // set by animation
@@ -151,13 +157,15 @@ public class OpponentController : MonoBehaviour
 			if (move.playRandomFromList > 0)
 			{
 				ani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
+                cloudani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
+                fireani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
 
-
-			}
+            }
 			else
 			{
-				ani.SetTrigger(move.triggerName[0]); //sends them to both but it shouldnt be an issue?
+				ani.SetTrigger(move.triggerName[0]); //sends them to both but it shouldnt be an issue
                 strikeani.SetTrigger(move.triggerName[0]);
+                cloudani.SetTrigger(move.triggerName[0]);
                 fireani.SetTrigger(move.triggerName[0]);
             }
 
@@ -172,65 +180,79 @@ public class OpponentController : MonoBehaviour
 
 		if (player.gameState == 1)
 		{
-            spr.enabled = true;
-            enemy.SetActive(true);
-            healthBar.enabled = false;
+			spr.enabled = true;
+			enemy.SetActive(true);
+			healthBar.enabled = false;
 
 
-            healthBar.value = health / maxHealth;
-			if (stunned)
+			ani.enabled = true;
+			ani.SetTrigger("start");
+
+			int timer = 0;
+
+			timer++;
+
+			Debug.Log(timer);
+
+			healthBar.value = health / maxHealth;
+			if (timer == 500)
 			{
-				if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
-				else
+
+			
+				if (stunned)
 				{
-					stunned = false;
-					ani.SetBool("stunned", stunned);
+					if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
+					else
+					{
+						stunned = false;
+						ani.SetBool("stunned", stunned);
+					}
 				}
+				if (knockedOut)
+				{
+					koTimer += Time.deltaTime;
+					int countNum = (int)Math.Floor(koTimer);
+					if (roundKOs == 3)
+					{
+						koText.text = "TKO";
+						koAni.SetTrigger("TKO");
+						// TKO!!! end game
+						// try deactivating the script itself so no funny logic happens
+						enabled = false;
+						return;
+					}
+					else if (koTimer >= getupTime)
+					{
+						knockedOut = false;
+						ani.SetTrigger("RISE");
+						health = 70.0f; // something
+						koTimer = 0.0f;
+						lastNumber = 0;
+					}
+					else if (koTimer >= 11.0f)
+					{
+						koText.text = "KO!";
+						koAni.SetTrigger("KO");
+						// its over, knockout!!
+					}
+					else if (countNum < 11 && countNum > lastNumber && countNum < getupTime)
+					{
+						lastNumber = countNum;
+						koText.text = countNum.ToString();
+						koAni.SetTrigger("count");
+					}
+				}
+				checkHitting();
 			}
-			if (knockedOut)
-			{
-				koTimer += Time.deltaTime;
-				int countNum = (int)Math.Floor(koTimer);
-				if (roundKOs == 3)
-				{
-					koText.text = "TKO";
-					koAni.SetTrigger("TKO");
-					// TKO!!! end game
-					// try deactivating the script itself so no funny logic happens
-					enabled = false;
-					return;
-				}
-				else if (koTimer >= getupTime)
-				{
-					knockedOut = false;
-					ani.SetTrigger("RISE");
-					health = 70.0f; // something
-					koTimer = 0.0f;
-					lastNumber = 0;
-				}
-				else if (koTimer >= 11.0f)
-				{
-					koText.text = "KO!";
-					koAni.SetTrigger("KO");
-					// its over, knockout!!
-				}
-				else if (countNum < 11 && countNum > lastNumber && countNum < getupTime)
-				{
-					lastNumber = countNum;
-					koText.text = countNum.ToString();
-					koAni.SetTrigger("count");
-				}
-			}
-            checkHitting();
 		}
 		else
 		{
 
 			spr.enabled = false;
-             healthBar.enabled = false;
-            enemy.SetActive(false);
+			healthBar.enabled = false;
+			enemy.SetActive(false);
 
-        }
+		}
 		
 	}
 
