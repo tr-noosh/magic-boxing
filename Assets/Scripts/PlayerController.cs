@@ -1,22 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+
+
+
+
+
+
+
+
+//using System.Diagnostics;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
 	public OpponentController opponent;
 
-	public Slider healthBar;
+	public UnityEngine.UI.Slider healthBar;
 
-	private SpriteRenderer spr;
-	private Animator ani;
+    public GameObject ui;
+    public GameObject mui;
 
-	public TextMeshProUGUI scoreText;
+    private SpriteRenderer spr;
+    public GameObject gloves;
 
-	[Header("Player Position")]
+    private Animator ani;
+    public Animator oppani;
+
+    public TextMeshProUGUI scoreText;
+
+	public int gameState = 0;
+    public int menuState = 1;	
+    public int difficulty = 2;
+
+
+    [Header("Player Position")]
 	public bool center = true;
 	public bool low = true;
 	public bool left = false;
@@ -36,13 +59,56 @@ public class PlayerController : MonoBehaviour
 	public float health = 100.0f;
 	public float damageStat = 5.0f;
 
-	void Awake()
+	[Header("mappings n whatnot")]
+
+    public KeyCode left_punch = KeyCode.D;
+    public KeyCode right_punch = KeyCode.K;
+
+    public KeyCode left_dodge = KeyCode.C;
+    public KeyCode right_dodge = KeyCode.M;
+    public KeyCode low_dodge = KeyCode.Space; 
+
+    //   public KeyCode left_dodge = KeyCode.RightArrow;
+    //public KeyCode right_dodge = KeyCode.LeftArrow;
+    //public KeyCode low_dodge = KeyCode.DownArrow;
+
+
+    public bool jabHold = false;
+
+    public KeyCode left_jab = KeyCode.S;
+    public KeyCode right_jab = KeyCode.L;
+
+
+
+	public UnityEngine.UI.Button play;
+    public UnityEngine.UI.Button settings;
+
+	public UnityEngine.UI.Button start, easy, mid, hard; 
+
+    public GameObject difficultyMenu, startMenu, settingsMenu;
+
+    void Awake()
 	{
-		spr = GetComponent<SpriteRenderer>();
-		ani = GetComponent<Animator>();
+
 	}
 
-	void miss() { }
+
+    void Start()
+    {
+        play.onClick.AddListener(PlayClick);
+        start.onClick.AddListener(StartClick);
+
+        easy.onClick.AddListener(easyClick);
+        mid.onClick.AddListener(midClick);
+        hard.onClick.AddListener(hardClick);
+
+        spr = GetComponent<SpriteRenderer>();
+        ani = GetComponent<Animator>();
+
+        menuUpdate();
+    }
+
+    void miss() { }
 	void blocked() { } 
 	public void damaged(string zone, float damage) {
 		health -= damage;
@@ -89,36 +155,195 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	private void startPunch(bool right) {
-		bool jab = Input.GetKey(KeyCode.UpArrow);
-		ani.SetTrigger(
-			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
-		);
+	private void startPunch(bool right)
+	{
+			bool jab = Input.GetKey(left_jab);
+			ani.SetTrigger(
+				(right ? "right" : "left") + (jab ? "jab" : "hook")
+			);
+		oppani.SetTrigger(
+				 (right ? "right" : "left") + ("_block")
+				 );
+
+    }
+
+	void Update()
+	{
+		if (gameState == 1)
+		{
+            ui.SetActive(true);
+            mui.SetActive(false);
+            gloves.SetActive(true);
+
+			updateScoreText();
+
+			if (!actionable) return;
+
+			if (Input.GetKey(left_dodge))
+			{
+				ani.SetTrigger("dodgeLeft");
+			}
+			else if (Input.GetKey(right_dodge))
+			{
+				ani.SetTrigger("dodgeRight");
+			}
+			else if (Input.GetKey(low_dodge))
+			{
+				ani.SetTrigger("dodgeDown");
+			}
+			else if (Input.GetKey(left_punch))
+			{
+				if (jabHold == true)
+				{
+					startPunch(true);
+
+				}
+				else
+				{
+
+					ani.SetTrigger(("left") + ("Hook"));
+                    oppani.SetTrigger(("left_block"));
+                }
+			}
+			else if (Input.GetKey(right_punch))
+			{
+
+				if (jabHold == true)
+				{
+					startPunch(false);
+
+				}
+				else
+				{
+					ani.SetTrigger(("right") + ("Hook"));
+                    oppani.SetTrigger(("right_block"));
+                }
+			}
+			if(jabHold == false)
+			{
+                if (Input.GetKey(left_jab))
+                {
+                    ani.SetTrigger("leftJab");
+                    oppani.SetTrigger(("left_block"));
+                }
+                else if (Input.GetKey(right_jab))
+                {
+                    ani.SetTrigger("rightJab");
+                    oppani.SetTrigger(("right_block"));
+                }
+
+
+            }
+
+
+
+		}
+		else
+		{
+            ui.SetActive(false);
+            mui.SetActive(true);
+            gloves.SetActive(false);
+
+			menu();
+
+
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            gameState = (gameState == 1) ? 0 : 1;
+        }
+    }
+
+	void menu()
+	{
+
+   
+        ////play.clicked += Click("play");
+
+        // settings.clicked += Click("settings");
+
+    }
+
+	/* void Click(string button)
+     {
+
+         switch (button)
+         {
+             case "play":
+                 Debug.Log("play");
+                 break;
+             case settings:
+                 Debug.Log("settoings!");
+                 break;
+         }
+
+         Debug.Log("Clicked!");
+
+     } */
+
+	void PlayClick()
+	{
+		Debug.Log("play button clicked");
+
+		if (menuState == 1)
+		{
+			menuState = 2;
+		}
+
+		menuUpdate();
+
 	}
 
-	void Update() {
-		updateScoreText();
+	void menuUpdate()
+	{
+        startMenu.SetActive(false);
+        difficultyMenu.SetActive(false);
+        settingsMenu.SetActive(false);
 
-		if (!actionable) return;
+        switch (menuState)
+        {
+            case 1:
+                startMenu.SetActive(true);
+                break;
+            case 2:
+                difficultyMenu.SetActive(true);
+                break;
+            case 3:
+                settingsMenu.SetActive(true);
+                break;
 
-		if (Input.GetKey(KeyCode.LeftArrow)) {
-			ani.SetTrigger("dodgeLeft");
-		} 
-		else if (Input.GetKey(KeyCode.RightArrow)) {
-			ani.SetTrigger("dodgeRight");
-		}
-		else if (Input.GetKey(KeyCode.DownArrow)) {
-			ani.SetTrigger("dodgeDown");
-		}
-		else if (Input.GetKey(KeyCode.Z)) {
-			startPunch(false);
-		}
-		else if (Input.GetKey(KeyCode.X)) {
-			startPunch(true);
-		}
-	}
+		
+        }
+    }
 
-	void updateScoreText() {
+
+
+
+	  void StartClick()
+    {
+        Debug.Log("start game button");
+
+        if (menuState == 2)
+        {
+            gameState = 1;
+        }
+
+    menuUpdate();
+		}
+
+
+
+    void easyClick() {Debug.Log("easy"); difficulty = 1; }
+    void midClick() { Debug.Log("medium"); difficulty = 2; }
+    void hardClick() { Debug.Log("hard"); difficulty = 3; }
+
+
+
+
+
+    void updateScoreText() {
 		string playerTxt = ( roundKOs == 2 ? "<color=\"red\">2</color>" : roundKOs.ToString());
 		string opponentTxt = ( opponent.roundKOs == 2 ? "<color=\"red\">2</color>" : opponent.roundKOs.ToString());
 		scoreText.text = playerTxt + "-" + opponentTxt;
@@ -126,6 +351,7 @@ public class PlayerController : MonoBehaviour
 
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color hurtColor = new(.93f, .25f, .25f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f);
+
 	private void OnDrawGizmos() {
 		if (!spr) {spr = GetComponent<SpriteRenderer>();}
 		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);

@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
   m_Name: IdleMove
   m_EditorClassIdentifier: 
-  triggerName: 
+  triggerName:
+  - idle
+  playRandomFromList: 0
   maxHits: 0
   maxTime: 0
   damageOnHit: 0
-  phaseWeights: 5a0000004b00000032000000
+  phaseWeights: 640000004b00000032000000
