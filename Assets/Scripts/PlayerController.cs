@@ -114,15 +114,17 @@ public class PlayerController : MonoBehaviour
 		health -= damage;
 		healthBar.value = health / maxHealth;
 		ani.SetTrigger("stun");
-	} 
+	}
 
-	public void hit(string punch) { // Called by the animation played by beginPunch()
+	public void hit(string punch)
+	{ // Called by the animation played by beginPunch()
 		bool highPunch = false;
 		bool rightPunch = false;
 
-		switch(punch) {
+		switch (punch)
+		{
 			case "LEFTJAB":
-				highPunch = true; 
+				highPunch = true;
 				break;
 			case "RIGHTJAB":
 				rightPunch = true;
@@ -135,9 +137,11 @@ public class PlayerController : MonoBehaviour
 				break;
 		}
 
-		if (highPunch) { // JAB
+		/*if (highPunch) { // JAB
 			if (!opponent.high) { miss(); }
+
 			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
+			
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch, damageStat);
@@ -148,12 +152,40 @@ public class PlayerController : MonoBehaviour
 			if (!opponent.low) { miss(); }
 			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
+
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch, damageStat);
 			}
 			else { miss(); }
+		}*/
+		if (opponent.iv == true)
+		{
+
+
+
 		}
-	}
+		else
+		{
+			if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL)
+			{
+
+				opponent.block(highPunch, rightPunch);
+
+
+				blocked();
+
+			}
+			else
+			{
+				opponent.damage(highPunch, rightPunch, damageStat);
+
+			}
+		}
+			
+      
+       
+
+    }
 
 	private void startPunch(bool right)
 	{
@@ -161,9 +193,9 @@ public class PlayerController : MonoBehaviour
 			ani.SetTrigger(
 				(right ? "right" : "left") + (jab ? "jab" : "hook")
 			);
-		oppani.SetTrigger(
-				 (right ? "right" : "left") + ("_block")
-				 );
+		//oppani.SetTrigger(
+				// (right ? "right" : "left") + ("_block")
+				// );
 
     }
 
@@ -202,7 +234,7 @@ public class PlayerController : MonoBehaviour
 				{
 
 					ani.SetTrigger(("left") + ("Hook"));
-                    oppani.SetTrigger(("left_block"));
+             
                 }
 			}
 			else if (Input.GetKey(right_punch))
@@ -216,7 +248,7 @@ public class PlayerController : MonoBehaviour
 				else
 				{
 					ani.SetTrigger(("right") + ("Hook"));
-                    oppani.SetTrigger(("right_block"));
+            
                 }
 			}
 			if(jabHold == false)
@@ -224,12 +256,12 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKey(left_jab))
                 {
                     ani.SetTrigger("leftJab");
-                    oppani.SetTrigger(("left_block"));
+                   
                 }
                 else if (Input.GetKey(right_jab))
                 {
                     ani.SetTrigger("rightJab");
-                    oppani.SetTrigger(("right_block"));
+                   
                 }
 
 

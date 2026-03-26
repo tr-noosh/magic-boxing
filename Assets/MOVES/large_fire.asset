@@ -19,4 +19,4 @@ MonoBehaviour:
   maxHits: 6
   maxTime: 10
   damageOnHit: 30
-  phaseWeights: 0a000000190000001e000000
+  phaseWeights: 01000000190000001e000000

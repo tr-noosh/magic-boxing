@@ -1,4 +1,5 @@
 using System;
+
 using TMPro;
 using UnityEngine;
 
@@ -47,7 +48,10 @@ public class OpponentController : MonoBehaviour
 	public bool low = true;
 	public bool high = true;
 
-	public BlockType blocking = BlockType.NONE;
+
+    public bool invincible = true;
+    public BlockType blocking = BlockType.NONE;
+	public bool blocked = false;
 
 	public int hitsRemaining = 4;
 	public float stunTime = 10.0f;
@@ -68,10 +72,13 @@ public class OpponentController : MonoBehaviour
 	public TextMeshProUGUI koText;
 	private Animator koAni;
 
-	public bool success = false;
+	public bool success,iv = false;
+
+	public int btimer = 300;
 
 
-	void Awake()
+
+    void Awake()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
@@ -81,42 +88,84 @@ public class OpponentController : MonoBehaviour
     }
 
 	private void knockout() {
+
+		iv = true;
 		//knockedOut = true; // set by animation
 		roundKOs++;
 		knockouts++;
 		phase = Math.Max(2, knockouts); // phase # maxes out at 3
 		
 		ani.SetTrigger("KO");
-		getupTime = Random.Range(1,4) + 2.0f*knockouts;
+		getupTime = 1;
 	}
 
-	public void damage(bool highPunch, bool rightPunch, float damage) {   // opponent taking damage. interrupt attacks and play animations
-        health -= damage;
+	public void damage(bool highPunch, bool rightPunch, float damage)
+	{   // opponent taking damage. interrupt attacks and play animations
 
-		if (health <= 0.0f) {
-			knockout(); return;
+		//Debug.Log("damage");
+
+		if (knockouts > 0)
+		{
+            btimer = 300;
+
+            blocking = BlockType.NONE;
+
+
+            health -= damage;
+
+				if (health <= 0.0f)
+				{
+					knockout(); return;
+				}
+
+
+				hitsRemaining--;
+
+				if (hitsRemaining > 0 && stunTime > 0.0f)
+				{
+					stunned = true;
+					Debug.Log("gorp");
+				}
+
+
+
+
+				if (hitsRemaining == 1) { finalHit = true; }
+				if (hitsRemaining <= 0) { stunTime = 0.0f; }
+
+
+
+				ani.SetBool("stunned", stunned);
+				ani.SetBool("final", finalHit);
+
+				ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + ("Low"));
+
+
+
+				//ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
+			}
+
 		}
+	
 
-        blocking = BlockType.NONE;
 
-		hitsRemaining--;
-		if (hitsRemaining > 0 && stunTime > 0.0f) {
-			stunned = true;
-			Debug.Log("gorp");
-		}
-		if (hitsRemaining == 1) { finalHit = true; }
-		if (hitsRemaining <= 0) { stunTime = 0.0f; }
-		ani.SetBool("stunned", stunned);
-		ani.SetBool("final", finalHit);
 
-		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
-	} 
-	public void block(bool highPunch, bool rightPunch) {}
 
-	private void checkHitting() {
+
+	public void block(bool highPunch, bool rightPunch) {
+
+        ani.SetTrigger(
+         (rightPunch ? "right" : "left") + ("_block")
+         );
+
+    }
+
+    private void checkHitting() {
 		if (!player.invincible)
 		{
-			if (player.center && hitCenter)
+		
+    
+            if (player.center && hitCenter)
 			{
 				success = true;
 				player.damaged("center", currentMoveDamage);
@@ -142,6 +191,7 @@ public class OpponentController : MonoBehaviour
 
 	public void chooseMove() {
 
+		iv = false;
 		success = false;
 		ani.SetBool("success", success);
 		finalHit = false;
@@ -152,6 +202,7 @@ public class OpponentController : MonoBehaviour
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
 		currentMoveDamage = move.damageOnHit;
+
 		if (move.triggerName != null)
 		{
 			if (move.playRandomFromList > 0)
@@ -177,29 +228,52 @@ public class OpponentController : MonoBehaviour
 
 	void Update() {
 
+     /*   
+        if (blocked == true )
+		{
+            blocking = BlockType.NONE;
 
-		if (player.gameState == 1)
+			btimer--;
+
+            if (btimer < 1)
+			{
+             
+                blocked = false;
+
+				
+            }
+        }
+
+		*/
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            ani.SetTrigger("right_block");
+        }
+     
+
+
+
+        if (player.gameState == 1)
 		{
 			spr.enabled = true;
 			enemy.SetActive(true);
 			healthBar.enabled = false;
 
-
-			ani.enabled = true;
+            invincible = true;
+            ani.enabled = true;
 			ani.SetTrigger("start");
 
 			int timer = 0;
 
 			timer++;
 
-			Debug.Log(timer);
 
 			healthBar.value = health / maxHealth;
 			if (timer == 500)
 			{
+                invincible = false;
 
-			
-				if (stunned)
+                if (stunned)
 				{
 					if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
 					else
