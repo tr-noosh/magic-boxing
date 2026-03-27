@@ -21,8 +21,9 @@ public class OpponentController : MonoBehaviour
 	public PlayerController player;
 
 	public Slider healthBar;
+    public strike_sender strikes;
 
-	private SpriteRenderer spr;
+    private SpriteRenderer spr;
 
 	public GameObject enemy;
 
@@ -232,6 +233,7 @@ public class OpponentController : MonoBehaviour
 			{
 				int anim_r = Random.Range(0, move.triggerName.Length);
 
+				//strikes.move(anim_r);
 
 				ani.SetTrigger(move.triggerName[anim_r]);
 				strikeani.SetTrigger(move.triggerName[anim_r]);
@@ -241,7 +243,9 @@ public class OpponentController : MonoBehaviour
             }
 			else
 			{
-				ani.SetTrigger(move.triggerName[0]); 
+               // strikes.move(0);
+
+                ani.SetTrigger(move.triggerName[0]); 
                 strikeani.SetTrigger(move.triggerName[0]);
                 cloudani.SetTrigger(move.triggerName[0]);
                 fireani.SetTrigger(move.triggerName[0]);

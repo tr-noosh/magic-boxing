@@ -15,6 +15,10 @@ using System.ComponentModel.Design;
 
 
 
+
+
+
+
 //using System.Diagnostics;
 using System.Threading;
 using TMPro;
@@ -44,6 +48,7 @@ public class PlayerController : MonoBehaviour
 	public int gameState = 0;
 	public int menuState = 1;
 	public int difficulty = 2;
+
 
 
 	[Header("Player Position")]
@@ -88,16 +93,18 @@ public class PlayerController : MonoBehaviour
 
 
 	public UnityEngine.UI.Button play;
-	public UnityEngine.UI.Button settings;
+	public UnityEngine.UI.Button settings, cset;
 
 	public UnityEngine.UI.Button start, easy, mid, hard;
 
-	public GameObject difficultyMenu, startMenu, settingsMenu;
+	public GameObject difficultyMenu, startMenu, settingsMenu, loseMenu;
 
 	public bool heldL, heldR, heldD;
 
 	public int ttimer = 0;
-	public float damage_t = 12f;
+    public GameObject loseText;
+
+    public float damage_t = 12f;
 
 	void Awake()
 	{
@@ -107,12 +114,19 @@ public class PlayerController : MonoBehaviour
 
 	void Start()
 	{
-		play.onClick.AddListener(PlayClick);
+        //loseText.SetActive(false);
+        play.onClick.AddListener(PlayClick);
 		start.onClick.AddListener(StartClick);
 
-		easy.onClick.AddListener(easyClick);
+		cset.onClick.AddListener(CClick);
+        //
+        //hard.onClick.AddListener(hardClick);
 
-		spr = GetComponent<SpriteRenderer>();
+        settings.onClick.AddListener(SClick);
+
+
+		
+        spr = GetComponent<SpriteRenderer>();
 		// ani = GetComponent<Animator>();
 
 		menuUpdate();
@@ -127,9 +141,18 @@ public class PlayerController : MonoBehaviour
 		//damage = damage_t;
         damage_t = damage;
         healthBar.value = health / maxHealth;
+
 		ani.SetTrigger("stun");
 
 		ttimer = 30;
+
+			if (health <= 0)
+			{
+			gameState = 0;
+            menuState = 5;
+            menuUpdate();
+
+		}
 
 	}
 
@@ -154,9 +177,8 @@ public class PlayerController : MonoBehaviour
 			case "RIGHTHOOK":
 				rightPunch = true;
 				break;
-
-				//Debug.Log("sd");
-		}
+                //Debug.Log("sd");
+        }
 
 		/*if (highPunch) { // JAB
 			if (!opponent.high) { miss(); }
@@ -211,6 +233,24 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+
+	public void keyUpdate(keymap key)
+	{
+		left_dodge = key.left_dodge;
+        right_dodge = key.right_dodge;
+
+      left_jab = key.left_jab;
+        right_jab = key.right_jab;
+
+		left_punch = key.left_punch;
+		right_punch = key.right_punch;
+
+		low_dodge = key.low_dodge;
+
+		Debug.Log("assigned keys");
+
+    }
+
 	private void startPunch(bool right)
 	{
 		bool jab = Input.GetKey(left_jab);
@@ -228,6 +268,23 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
 	{
+
+		if (Input.GetKeyDown(KeyCode.Alpha1))
+		{
+
+
+			if (invincible == true)
+			{
+				invincible = false;
+
+
+			}
+			else
+			{
+				invincible = true;
+			}
+		}
+
 
 
 		if (ttimer > 0)
@@ -342,14 +399,11 @@ public class PlayerController : MonoBehaviour
 			menu();
 
 
-        }
+		}
 
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            gameState = (gameState == 1) ? 0 : 1;
-        }
-    }
+	
+	}
 
 	void menu()
 	{
@@ -396,6 +450,7 @@ public class PlayerController : MonoBehaviour
         startMenu.SetActive(false);
         difficultyMenu.SetActive(false);
         settingsMenu.SetActive(false);
+        loseMenu.SetActive(false);
 
         switch (menuState)
         {
@@ -408,15 +463,34 @@ public class PlayerController : MonoBehaviour
             case 3:
                 settingsMenu.SetActive(true);
                 break;
+            case 5:
+                loseMenu.SetActive(true);
+                break;
 
-		
+
         }
     }
 
+	void SClick()
+	{
+		Debug.Log("settings button");
+
+		if (menuState == 1)
+		{
+			menuState = 3;
+		}
+		menuUpdate();
+	}
 
 
+    void CClick()
+    { Debug.Log("choose key button");   if (menuState == 3){
+  menuState = 1;
+        }
+        menuUpdate();
+    }
 
-	  void StartClick()
+    void StartClick()
     {
         Debug.Log("start game button");
 

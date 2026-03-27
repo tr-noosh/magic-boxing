@@ -16,7 +16,7 @@ MonoBehaviour:
   - leftPunch
   - rightPunch
   playRandomFromList: 2
-  maxHits: 6
+  maxHits: 12
   maxTime: 12
   damageOnHit: 6
   phaseWeights: 50000000320000000a000000
