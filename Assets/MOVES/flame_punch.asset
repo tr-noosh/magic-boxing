@@ -16,7 +16,7 @@ MonoBehaviour:
   - right_flame
   - left_flame
   playRandomFromList: 2
-  maxHits: 6
+  maxHits: 4
   maxTime: 12
-  damageOnHit: 12
-  phaseWeights: 010000003c00000046000000
+  damageOnHit: 9
+  phaseWeights: 000000005000000064000000

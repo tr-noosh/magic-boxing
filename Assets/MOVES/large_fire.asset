@@ -16,7 +16,7 @@ MonoBehaviour:
   - firepunch_right
   - firepunch_left
   playRandomFromList: 2
-  maxHits: 6
+  maxHits: 1
   maxTime: 10
-  damageOnHit: 30
-  phaseWeights: 01000000190000001e000000
+  damageOnHit: 16
+  phaseWeights: 000000002800000050000000

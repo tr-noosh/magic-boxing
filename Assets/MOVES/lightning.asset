@@ -18,5 +18,5 @@ MonoBehaviour:
   playRandomFromList: 0
   maxHits: 1
   maxTime: 10
-  damageOnHit: 10
-  phaseWeights: 01000000190000001e000000
+  damageOnHit: 30
+  phaseWeights: 3c000000000000003c000000

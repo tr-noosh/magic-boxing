@@ -75,8 +75,9 @@ public class OpponentController : MonoBehaviour
 	public bool success,iv = false;
 
 	public int btimer = 300;
+    public int ftimer = 0;
 
-
+    public ParticleSystem glass;
 
     void Awake()
 	{
@@ -93,7 +94,7 @@ public class OpponentController : MonoBehaviour
 		//knockedOut = true; // set by animation
 		roundKOs++;
 		knockouts++;
-		phase = Math.Max(2, knockouts); // phase # maxes out at 3
+		phase++;
 		
 		ani.SetTrigger("KO");
 		getupTime = 1;
@@ -118,41 +119,60 @@ public class OpponentController : MonoBehaviour
 					knockout(); return;
 				}
 
-
-				hitsRemaining--;
-
-				if (hitsRemaining > 0 && stunTime > 0.0f)
+		
+			/*	if (hitsRemaining > 0 && stunTime > 0.0f)
 				{
 					stunned = true;
 					Debug.Log("gorp");
 				}
 
-
-
-
 				if (hitsRemaining == 1) { finalHit = true; }
-				if (hitsRemaining <= 0) { stunTime = 0.0f; }
-
-
-
+				if (hitsRemaining <= 0) {
+			*/
+      
 				ani.SetBool("stunned", stunned);
 				ani.SetBool("final", finalHit);
 
-				ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + ("Low"));
+
+            if (hitsRemaining <= 0)
+            {
+
+
+                blocking = BlockType.ALL;
+
+                ani.SetTrigger("left_flame");
+                ani.Play("flame_left");
+
+
+            }
+            else
+            {
+                hitsRemaining--;
+
+		
+                ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + ("Low"));
+
+            }
 
 
 
-				//ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
-			}
+            //ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
+        }
 
 		}
-	
 
 
 
+    
+
+	public void glass_break() { 
+       {
+            glass.Play();
+       }
+    }
 
 
-	public void block(bool highPunch, bool rightPunch) {
+    public void block(bool highPunch, bool rightPunch) {
 
         ani.SetTrigger(
          (rightPunch ? "right" : "left") + ("_block")
@@ -161,10 +181,10 @@ public class OpponentController : MonoBehaviour
     }
 
     private void checkHitting() {
-		if (!player.invincible)
+
+
+        if (!player.invincible)
 		{
-		
-    
             if (player.center && hitCenter)
 			{
 				success = true;
@@ -184,8 +204,9 @@ public class OpponentController : MonoBehaviour
 			{
 				success = true;
 				player.damaged("right", currentMoveDamage);
+
 			}
-			ani.SetBool("success", success);
+			//ani.SetBool("success", success);
 		}
 	}
 
@@ -205,16 +226,22 @@ public class OpponentController : MonoBehaviour
 
 		if (move.triggerName != null)
 		{
+
+
 			if (move.playRandomFromList > 0)
 			{
-				ani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
-                cloudani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
-                fireani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
+				int anim_r = Random.Range(0, move.triggerName.Length);
+
+
+				ani.SetTrigger(move.triggerName[anim_r]);
+				strikeani.SetTrigger(move.triggerName[anim_r]);
+                cloudani.SetTrigger(move.triggerName[anim_r]);
+                fireani.SetTrigger(move.triggerName[anim_r]);
 
             }
 			else
 			{
-				ani.SetTrigger(move.triggerName[0]); //sends them to both but it shouldnt be an issue
+				ani.SetTrigger(move.triggerName[0]); 
                 strikeani.SetTrigger(move.triggerName[0]);
                 cloudani.SetTrigger(move.triggerName[0]);
                 fireani.SetTrigger(move.triggerName[0]);
@@ -263,15 +290,20 @@ public class OpponentController : MonoBehaviour
             ani.enabled = true;
 			ani.SetTrigger("start");
 
-			int timer = 0;
+			
 
-			timer++;
+			ftimer++;
 
 
 			healthBar.value = health / maxHealth;
-			if (timer == 500)
+
+			if (ftimer >= 500)
 			{
+
+                ftimer = 500;
                 invincible = false;
+                checkHitting();
+               
 
                 if (stunned)
 				{
@@ -316,8 +348,13 @@ public class OpponentController : MonoBehaviour
 						koAni.SetTrigger("count");
 					}
 				}
-				checkHitting();
-			}
+
+
+            }
+		
+		
+			
+		
 		}
 		else
 		{

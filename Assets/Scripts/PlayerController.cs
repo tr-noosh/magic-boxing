@@ -9,6 +9,12 @@ using System.ComponentModel.Design;
 
 
 
+
+
+
+
+
+
 //using System.Diagnostics;
 using System.Threading;
 using TMPro;
@@ -23,28 +29,29 @@ public class PlayerController : MonoBehaviour
 
 	public UnityEngine.UI.Slider healthBar;
 
-    public GameObject ui;
-    public GameObject mui;
+	public GameObject ui;
+	public GameObject mui;
 
-    private SpriteRenderer spr;
-    public GameObject gloves;
 
-    private Animator ani;
-    public Animator oppani;
+	private SpriteRenderer spr;
+	public GameObject gloves;
 
-    public TextMeshProUGUI scoreText;
+	public Animator ani;
+	public Animator oppani;
+
+	public TextMeshProUGUI scoreText;
 
 	public int gameState = 0;
-    public int menuState = 1;	
-    public int difficulty = 2;
+	public int menuState = 1;
+	public int difficulty = 2;
 
 
-    [Header("Player Position")]
+	[Header("Player Position")]
 	public bool center = true;
 	public bool low = true;
 	public bool left = false;
 	public bool right = false;
-	
+
 	[Header("Player State")]
 	public bool actionable = true; // can begin an action or interrupt currently performing action
 	public bool invincible = false; // temporarily immune to further damage
@@ -61,63 +68,75 @@ public class PlayerController : MonoBehaviour
 
 	[Header("mappings n whatnot")]
 
-    public KeyCode left_punch = KeyCode.D;
-    public KeyCode right_punch = KeyCode.K;
+	public KeyCode left_punch = KeyCode.D;
+	public KeyCode right_punch = KeyCode.K;
 
-    public KeyCode left_dodge = KeyCode.C;
-    public KeyCode right_dodge = KeyCode.M;
-    public KeyCode low_dodge = KeyCode.Space; 
+	public KeyCode left_dodge = KeyCode.C;
+	public KeyCode right_dodge = KeyCode.M;
+	public KeyCode low_dodge = KeyCode.Space;
 
-    //   public KeyCode left_dodge = KeyCode.RightArrow;
-    //public KeyCode right_dodge = KeyCode.LeftArrow;
-    //public KeyCode low_dodge = KeyCode.DownArrow;
+	//   public KeyCode left_dodge = KeyCode.RightArrow;
+	//public KeyCode right_dodge = KeyCode.LeftArrow;
+	//public KeyCode low_dodge = KeyCode.DownArrow;
 
 
-    public bool jabHold = false;
+	public bool jabHold = false;
 
-    public KeyCode left_jab = KeyCode.S;
-    public KeyCode right_jab = KeyCode.L;
+	public KeyCode left_jab = KeyCode.S;
+	public KeyCode right_jab = KeyCode.L;
 
 
 
 	public UnityEngine.UI.Button play;
-    public UnityEngine.UI.Button settings;
+	public UnityEngine.UI.Button settings;
 
-	public UnityEngine.UI.Button start, easy, mid, hard; 
+	public UnityEngine.UI.Button start, easy, mid, hard;
 
-    public GameObject difficultyMenu, startMenu, settingsMenu;
+	public GameObject difficultyMenu, startMenu, settingsMenu;
 
-    void Awake()
+	public bool heldL, heldR, heldD;
+
+	public int ttimer = 0;
+	public float damage_t = 12f;
+
+	void Awake()
 	{
 
 	}
 
 
-    void Start()
-    {
-        play.onClick.AddListener(PlayClick);
-        start.onClick.AddListener(StartClick);
+	void Start()
+	{
+		play.onClick.AddListener(PlayClick);
+		start.onClick.AddListener(StartClick);
 
-        easy.onClick.AddListener(easyClick);
-        mid.onClick.AddListener(midClick);
-        hard.onClick.AddListener(hardClick);
+		easy.onClick.AddListener(easyClick);
 
-        spr = GetComponent<SpriteRenderer>();
-        ani = GetComponent<Animator>();
+		spr = GetComponent<SpriteRenderer>();
+		// ani = GetComponent<Animator>();
 
-        menuUpdate();
-    }
-
-    void miss() { }
-	void blocked() { } 
-	public void damaged(string zone, float damage) {
-		health -= damage;
-		healthBar.value = health / maxHealth;
-		ani.SetTrigger("stun");
+		menuUpdate();
 	}
 
+	void miss() { }
+	void blocked() { }
+
+
+	public void damaged(string zone, float damage) {
+
+		//damage = damage_t;
+        damage_t = damage;
+        healthBar.value = health / maxHealth;
+		ani.SetTrigger("stun");
+
+		ttimer = 30;
+
+	}
+
+
+
 	public void hit(string punch)
-	{ // Called by the animation played by beginPunch()
+	{
 		bool highPunch = false;
 		bool rightPunch = false;
 
@@ -135,6 +154,8 @@ public class PlayerController : MonoBehaviour
 			case "RIGHTHOOK":
 				rightPunch = true;
 				break;
+
+				//Debug.Log("sd");
 		}
 
 		/*if (highPunch) { // JAB
@@ -162,7 +183,7 @@ public class PlayerController : MonoBehaviour
 		{
 
 
-
+			Debug.Log("s");
 		}
 		else
 		{
@@ -171,37 +192,67 @@ public class PlayerController : MonoBehaviour
 
 				opponent.block(highPunch, rightPunch);
 
+				Debug.Log("a");
 
 				blocked();
 
 			}
 			else
 			{
-				opponent.damage(highPunch, rightPunch, damageStat);
+				opponent.damage(highPunch, rightPunch, 2f);
+
+				Debug.Log("d");
 
 			}
 		}
-			
-      
-       
 
-    }
+
+
+
+	}
 
 	private void startPunch(bool right)
 	{
-			bool jab = Input.GetKey(left_jab);
-			ani.SetTrigger(
-				(right ? "right" : "left") + (jab ? "jab" : "hook")
-			);
-		//oppani.SetTrigger(
-				// (right ? "right" : "left") + ("_block")
-				// );
+		bool jab = Input.GetKey(left_jab);
+		ani.SetTrigger(
+			(right ? "right" : "left") + (jab ? "jab" : "hook")
+		);
 
-    }
+		//hit((right ? "right" : "left") +(jab ? "jab" : "hook"));
+
+		//oppani.SetTrigger(
+		// (right ? "right" : "left") + ("_block")
+		// );
+
+	}
 
 	void Update()
 	{
-		if (gameState == 1)
+
+
+		if (ttimer > 0)
+		{
+			ttimer--;
+		}
+		if (ttimer == 28)
+		{
+            health -= damage_t * difficulty;
+        }
+        if (ttimer == 0)
+        {
+
+			ani.ResetTrigger("stun");
+          //  health -= damage_t;
+        }
+
+
+		right = heldR;
+		left = heldL;
+		low = heldD;
+
+        center = !(heldL || heldR);
+
+        if (gameState == 1)
 		{
             ui.SetActive(true);
             mui.SetActive(false);
@@ -209,21 +260,33 @@ public class PlayerController : MonoBehaviour
 
 			updateScoreText();
 
-			if (!actionable) return;
+			if (!actionable) {
 
-			if (Input.GetKey(left_dodge))
-			{
-				ani.SetTrigger("dodgeLeft");
-			}
-			else if (Input.GetKey(right_dodge))
-			{
-				ani.SetTrigger("dodgeRight");
-			}
-			else if (Input.GetKey(low_dodge))
-			{
-				ani.SetTrigger("dodgeDown");
-			}
-			else if (Input.GetKey(left_punch))
+                ani.ResetTrigger("leftHook");
+                ani.ResetTrigger("rightHook");
+                ani.ResetTrigger("leftJab");
+                ani.ResetTrigger("rightJab");
+
+                return;
+            } 
+
+            heldL = Input.GetKey(left_dodge);
+            Vector3 desired = heldL ? new Vector3(-4f, 0f, -2f) : new Vector3(0f, 0f, -2f);
+            transform.position = Vector3.Lerp(transform.position, desired, Time.deltaTime * 6f);
+            //gloves.transform.position = Vector3.Lerp(gloves.transform.position, desired, Time.deltaTime * 3f);
+
+            heldR = Input.GetKey(right_dodge);
+            Vector3 desiredr = heldR ? new Vector3(4f, 0f, -2f) : new Vector3(0f, 0f, -2f);
+            transform.position = Vector3.Lerp(transform.position, desiredr, Time.deltaTime * 6f);
+
+
+            heldD = Input.GetKey(low_dodge);
+            Vector3 desiredl = heldD ? new Vector3(0f, -2f, -2f) : new Vector3(0f, 0f, -2f);
+			transform.position = Vector3.Lerp(transform.position, desiredl, Time.deltaTime * 6f);
+
+		
+
+            if (Input.GetKey(left_punch))
 			{
 				if (jabHold == true)
 				{
@@ -234,8 +297,8 @@ public class PlayerController : MonoBehaviour
 				{
 
 					ani.SetTrigger(("left") + ("Hook"));
-             
-                }
+
+				}
 			}
 			else if (Input.GetKey(right_punch))
 			{
@@ -248,15 +311,16 @@ public class PlayerController : MonoBehaviour
 				else
 				{
 					ani.SetTrigger(("right") + ("Hook"));
-            
-                }
+
+				}
 			}
 			if(jabHold == false)
 			{
                 if (Input.GetKey(left_jab))
                 {
                     ani.SetTrigger("leftJab");
-                   
+                  
+
                 }
                 else if (Input.GetKey(right_jab))
                 {
@@ -268,8 +332,7 @@ public class PlayerController : MonoBehaviour
             }
 
 
-
-		}
+        }
 		else
 		{
             ui.SetActive(false);
