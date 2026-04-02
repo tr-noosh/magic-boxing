@@ -123,7 +123,7 @@ public class OpponentController : MonoBehaviour
 
 				if (knockouts > 0)
 				{
-                    btimer = 60;
+                    btimer = 40;
 
                     blocking = BlockType.NONE;
 

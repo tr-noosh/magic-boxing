@@ -21,6 +21,7 @@ using System.ComponentModel.Design;
 
 
 
+
 //using System.Diagnostics;
 using System.Threading;
 using TMPro;
@@ -99,7 +100,7 @@ public class PlayerController : MonoBehaviour
 	public UnityEngine.UI.Button play;
 	public UnityEngine.UI.Button settings, cset;
 
-	public UnityEngine.UI.Button start, easy, mid, hard;
+	public UnityEngine.UI.Button start, easy, mid, hard, back;
 
 	public GameObject difficultyMenu, startMenu, settingsMenu, loseMenu;
 
@@ -110,46 +111,31 @@ public class PlayerController : MonoBehaviour
 
     public float damage_t = 12f;
 
-	void Awake()
-	{
-
-	}
-
-
 	void Start()
 	{
-        //loseText.SetActive(false);
         play.onClick.AddListener(PlayClick);
 		start.onClick.AddListener(StartClick);
-
 		cset.onClick.AddListener(CClick);
-        //
-        //hard.onClick.AddListener(hardClick);
+
+        back.onClick.AddListener(BackClick);
 
         settings.onClick.AddListener(SClick);
 
-
-		
-        spr = GetComponent<SpriteRenderer>();
-		// ani = GetComponent<Animator>();
+        //spr = GetComponent<SpriteRenderer>();
 
 		menuUpdate();
 	}
 
-	void miss() { }
-	void blocked() { }
-
 
 	public void damaged(string zone, float damage) {
 
-		//damage = damage_t;
         damage_t = damage;
+
         healthBar.value = health / maxHealth;
 
 		ani.SetTrigger("stun");
 
 		ca.dshake();
-
 
 		ttimer = 30;
 
@@ -163,100 +149,9 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+	public void hit(string punch){ }
 
 
-	public void hit(string punch)
-	{
-		bool highPunch = false;
-		bool rightPunch = false;
-
-		switch (punch)
-		{
-			case "LEFTJAB":
-				highPunch = true;
-				break;
-			case "RIGHTJAB":
-				rightPunch = true;
-				highPunch = true;
-				break;
-			case "LEFTHOOK":
-				break;
-			case "RIGHTHOOK":
-				rightPunch = true;
-				break;
-                //Debug.Log("sd");
-        }
-
-		/*if (highPunch) { // JAB
-			if (!opponent.high) { miss(); }
-
-			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
-			
-			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
-			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
-				opponent.damage(highPunch, rightPunch, damageStat);
-			}
-			else { miss(); }
-		}
-		else { // HOOK
-			if (!opponent.low) { miss(); }
-			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
-			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
-
-			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
-				opponent.damage(highPunch, rightPunch, damageStat);
-			}
-			else { miss(); }
-		}*/
-		if (opponent.iv == true)
-		{
-
-
-			Debug.Log("invincible");
-		}
-
-		/*
-		else
-		{
-			if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL)
-			{
-
-				//opponent.block(highPunch, rightPunch);
-
-				blocked();
-
-			}
-			else
-			{
-			//	opponent.damage(highPunch, rightPunch, 2f);
-
-				Debug.Log("d");
-
-			}
-		}*/
-
-
-
-
-	}
-
-
-	public void keyUpdate(keymap key)
-	{
-		left_dodge = key.left_dodge;
-        right_dodge = key.right_dodge;
-
-      left_jab = key.left_jab;
-        right_jab = key.right_jab;
-
-		left_punch = key.left_punch;
-		right_punch = key.right_punch;
-
-		low_dodge = key.low_dodge;
-
-		Debug.Log("assigned keys");
-
-	}
 
 	private void startPunch(bool right)
 	{
@@ -487,37 +382,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-	void SClick()
-	{
-		Debug.Log("settings button");
-
-		if (menuState == 1)
-		{
-			menuState = 3;
-		}
-		menuUpdate();
-	}
 
 
-    void CClick()
-    { Debug.Log("choose key button");   if (menuState == 3){
-  menuState = 1;
-        }
-        menuUpdate();
-    }
 
-    void StartClick()
-    {
-        Debug.Log("start game button");
+    void SClick(){Debug.Log("settings button");if (menuState == 1)	{menuState = 3;}menuUpdate();}
+    void CClick() { Debug.Log("choose key button");   if (menuState == 3){menuState = 1;}menuUpdate();}
+	void StartClick(){Debug.Log("start game button");  if (menuState == 2){ gameState = 1;} menuUpdate();}
 
-        if (menuState == 2)
-        {
-            gameState = 1;
-        }
-
-    menuUpdate();
-		}
-
+    void BackClick() { Debug.Log("back button"); if (menuState == 2) { menuState = 1; } menuUpdate(); }
 
 
     void easyClick() {Debug.Log("easy"); difficulty = 1; }
@@ -525,7 +397,22 @@ public class PlayerController : MonoBehaviour
     void hardClick() { Debug.Log("hard"); difficulty = 3; }
 
 
+    public void keyUpdate(keymap key)
+    {
+        left_dodge = key.left_dodge;
+        right_dodge = key.right_dodge;
 
+        left_jab = key.left_jab;
+        right_jab = key.right_jab;
+
+        left_punch = key.left_punch;
+        right_punch = key.right_punch;
+
+        low_dodge = key.low_dodge;
+
+        Debug.Log("assigned keys");
+
+    }
 
 
     void updateScoreText() {
@@ -533,6 +420,9 @@ public class PlayerController : MonoBehaviour
 		string opponentTxt = ( opponent.roundKOs == 2 ? "<color=\"red\">2</color>" : opponent.roundKOs.ToString());
 		scoreText.text = playerTxt + "-" + opponentTxt;
 	}
+
+
+
 
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color hurtColor = new(.93f, .25f, .25f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f);
