@@ -75,7 +75,13 @@ public class strike_sender : MonoBehaviour
             size = 0.5f;
             tr = d;
         }
-    
+
+    public void dshake()
+    {
+        d = 0.1f;
+        size = 0.2f;
+        tr = d;
+    }
 
 
 

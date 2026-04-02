@@ -16304,9 +16304,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 6
+  m_SortingOrder: 270
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 0.5849056, g: 0.25493053, b: 0.31355125, a: 0.9764706}
+  m_Color: {r: 0.5849056, g: 0.25493053, b: 0.31355125, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -21543,6 +21543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   opponent: {fileID: 450346912}
+  ca: {fileID: 60351070}
   healthBar: {fileID: 380067449}
   ui: {fileID: 1765534964}
   mui: {fileID: 328386257}
@@ -21553,6 +21554,7 @@ MonoBehaviour:
   gameState: 0
   menuState: 1
   difficulty: 2
+  playerDamage: 10
   center: 1
   low: 1
   left: 0
@@ -22241,7 +22243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1645927943}
   d: 0.5
-  size: 0.3
+  size: -13.38
   speed: 1
   camera: {fileID: 963194227}
 --- !u!1 &1813653160

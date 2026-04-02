@@ -19,6 +19,8 @@ using System.ComponentModel.Design;
 
 
 
+
+
 //using System.Diagnostics;
 using System.Threading;
 using TMPro;
@@ -30,8 +32,9 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
 	public OpponentController opponent;
+    public strike_sender ca;
 
-	public UnityEngine.UI.Slider healthBar;
+    public UnityEngine.UI.Slider healthBar;
 
 	public GameObject ui;
 	public GameObject mui;
@@ -49,7 +52,7 @@ public class PlayerController : MonoBehaviour
 	public int menuState = 1;
 	public int difficulty = 2;
 
-
+	public int playerDamage = 10;
 
 	[Header("Player Position")]
 	public bool center = true;
@@ -86,8 +89,9 @@ public class PlayerController : MonoBehaviour
 
 
 	public bool jabHold = false;
+    bool jab = false;
 
-	public KeyCode left_jab = KeyCode.S;
+    public KeyCode left_jab = KeyCode.S;
 	public KeyCode right_jab = KeyCode.L;
 
 
@@ -143,6 +147,9 @@ public class PlayerController : MonoBehaviour
         healthBar.value = health / maxHealth;
 
 		ani.SetTrigger("stun");
+
+		ca.dshake();
+
 
 		ttimer = 30;
 
@@ -205,28 +212,28 @@ public class PlayerController : MonoBehaviour
 		{
 
 
-			Debug.Log("s");
+			Debug.Log("invincible");
 		}
+
+		/*
 		else
 		{
 			if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL)
 			{
 
-				opponent.block(highPunch, rightPunch);
-
-				Debug.Log("a");
+				//opponent.block(highPunch, rightPunch);
 
 				blocked();
 
 			}
 			else
 			{
-				opponent.damage(highPunch, rightPunch, 2f);
+			//	opponent.damage(highPunch, rightPunch, 2f);
 
 				Debug.Log("d");
 
 			}
-		}
+		}*/
 
 
 
@@ -249,14 +256,63 @@ public class PlayerController : MonoBehaviour
 
 		Debug.Log("assigned keys");
 
-    }
+	}
 
 	private void startPunch(bool right)
 	{
-		bool jab = Input.GetKey(left_jab);
-		ani.SetTrigger(
-			(right ? "right" : "left") + (jab ? "jab" : "hook")
-		);
+
+
+        if (jabHold == true)
+        {
+           /* if (jab)
+            {
+                playerDamage = 5;
+
+            }
+            else
+            {
+                playerDamage = 12;
+
+            }
+            ani.SetTrigger(
+                (right ? "right" : "left") + (jab ? "jab" : "hook")
+            );
+
+            opponent.damage(playerDamage, right);
+
+
+            //startPunch(false);
+		   */
+        }
+        else
+        {
+            if (jab)
+            {
+                playerDamage = 2;
+
+            }
+            else
+            {
+                playerDamage = 5;
+
+            }
+           
+            ani.SetTrigger((right ? "right" : "left") + (jab ? "Jab" : "Hook")
+           );
+
+			Debug.Log((jab ? "Jab" : "Hook"));
+            opponent.damage(playerDamage, right);
+
+            if (jab)
+            {
+				jab = false;
+
+            }
+
+        }
+       
+
+		
 
 		//hit((right ? "right" : "left") +(jab ? "jab" : "hook"));
 
@@ -343,50 +399,10 @@ public class PlayerController : MonoBehaviour
 
 		
 
-            if (Input.GetKey(left_punch))
-			{
-				if (jabHold == true)
-				{
-					startPunch(true);
-
-				}
-				else
-				{
-
-					ani.SetTrigger(("left") + ("Hook"));
-
-				}
-			}
-			else if (Input.GetKey(right_punch))
-			{
-
-				if (jabHold == true)
-				{
-					startPunch(false);
-
-				}
-				else
-				{
-					ani.SetTrigger(("right") + ("Hook"));
-
-				}
-			}
-			if(jabHold == false)
-			{
-                if (Input.GetKey(left_jab))
-                {
-                    ani.SetTrigger("leftJab");
-                  
-
-                }
-                else if (Input.GetKey(right_jab))
-                {
-                    ani.SetTrigger("rightJab");
-                   
-                }
-
-
-            }
+            if (Input.GetKey(left_punch))		{   startPunch(false);   }
+            if (Input.GetKey(right_punch)) { startPunch(true); }
+            if (Input.GetKey(left_jab)) { jab = true;  startPunch(false); }
+            if (Input.GetKey(right_jab)) { jab = true; startPunch(true); }
 
 
         }

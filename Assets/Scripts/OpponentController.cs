@@ -101,64 +101,80 @@ public class OpponentController : MonoBehaviour
 		getupTime = 1;
 	}
 
-	public void damage(bool highPunch, bool rightPunch, float damage)
+	public void damage(int dmg, bool rightPunch)
 	{   // opponent taking damage. interrupt attacks and play animations
-
-		//Debug.Log("damage");
-
-		if (knockouts > 0)
+		if (blocking == BlockType.HIGH || blocking == BlockType.ALL)
 		{
-            btimer = 300;
 
-            blocking = BlockType.NONE;
+			Debug.Log("block");
+
+			block(true, rightPunch);
+
+		}
+		else
+		{
 
 
-            health -= damage;
 
-				if (health <= 0.0f)
+			if (btimer == 0)
+			{
+
+				//Debug.Log("damage");
+
+				if (knockouts > 0)
 				{
-					knockout(); return;
+                    btimer = 60;
+
+                    blocking = BlockType.NONE;
+
+
+					health -= dmg;
+
+					if (health <= 0.0f)
+					{
+						knockout(); return;
+					}
+
+
+					/*	if (hitsRemaining > 0 && stunTime > 0.0f)
+						{
+							stunned = true;
+							Debug.Log("gorp");
+						}
+
+						if (hitsRemaining == 1) { finalHit = true; }
+						if (hitsRemaining <= 0) {
+					*/
+
+					ani.SetBool("stunned", stunned);
+					ani.SetBool("final", finalHit);
+
+
+					if (hitsRemaining <= 0)
+					{
+
+                        btimer = 1000;
+                        blocking = BlockType.ALL;
+
+						ani.SetTrigger("left_flame");
+						ani.Play("flame_left");
+                       
+
+                    }
+					else
+					{
+						hitsRemaining--;
+
+
+						ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + ("Low"));
+
+					}
+
+
 				}
-
-		
-			/*	if (hitsRemaining > 0 && stunTime > 0.0f)
-				{
-					stunned = true;
-					Debug.Log("gorp");
-				}
-
-				if (hitsRemaining == 1) { finalHit = true; }
-				if (hitsRemaining <= 0) {
-			*/
-      
-				ani.SetBool("stunned", stunned);
-				ani.SetBool("final", finalHit);
-
-
-            if (hitsRemaining <= 0)
-            {
-
-
-                blocking = BlockType.ALL;
-
-                ani.SetTrigger("left_flame");
-                ani.Play("flame_left");
-
-
-            }
-            else
-            {
-                hitsRemaining--;
-
-		
-                ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + ("Low"));
-
-            }
-
-
-
-            //ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
-        }
+				//ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
+			}
+		  }
 
 		}
 
@@ -259,23 +275,15 @@ public class OpponentController : MonoBehaviour
 
 	void Update() {
 
-     /*   
-        if (blocked == true )
+      
+        if(btimer > 0)
 		{
-            blocking = BlockType.NONE;
 
-			btimer--;
+			--btimer;
+		}
 
-            if (btimer < 1)
-			{
-             
-                blocked = false;
 
-				
-            }
-        }
 
-		*/
         if (Input.GetKey(KeyCode.Alpha2))
         {
             ani.SetTrigger("right_block");
