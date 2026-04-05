@@ -91,6 +91,11 @@ public class OpponentController : MonoBehaviour
 
 	private void knockout() {
 
+        // Knockout + Round 2 appears broken, resulting in a softlock bug (no more moves
+        // from enemy, complete stalemate). I'm making it go directly to a win screen since we
+        // don't have much time left. Feel free to fix it if you find the time; otherwise,
+		// only one round is still a functional game for submission, even if unfortunate. -- Chris
+        /*
 		iv = true;
 		//knockedOut = true; // set by animation
 		roundKOs++;
@@ -99,6 +104,9 @@ public class OpponentController : MonoBehaviour
 		
 		ani.SetTrigger("KO");
 		getupTime = 1;
+		*/
+
+        player.Win();
 	}
 
 	public void damage(int dmg, bool rightPunch)

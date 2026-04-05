@@ -49,11 +49,14 @@ public class PlayerController : MonoBehaviour
 
 	public TextMeshProUGUI scoreText;
 
-	public int gameState = 0;
-	public int menuState = 1;
+	public int gameState = GAMESTATE_MENU;
+	public int menuState = MAIN_MENU;
 	public int difficulty = 2;
 
-	public int playerDamage = 10;
+    const int MAIN_MENU = 1, DIFFICULTY_MENU = 2, SETTINGS_MENU = 3, LOSE_MENU = 5, WIN_MENU = 6; // for cleaner code on menuState
+	const int GAMESTATE_MENU = 0, GAMESTATE_PLAYING = 1; // for cleaner code on gameState
+
+    public int playerDamage = 10;
 
 	[Header("Player Position")]
 	public bool center = true;
@@ -100,10 +103,9 @@ public class PlayerController : MonoBehaviour
 	public UnityEngine.UI.Button play;
 	public UnityEngine.UI.Button settings, cset;
 
-	public UnityEngine.UI.Button start, easy, mid, hard, back;
+	public UnityEngine.UI.Button start, easy, mid, hard, back, mainMenuFromLose, mainMenuFromWin;
 
-	public GameObject difficultyMenu, startMenu, settingsMenu, loseMenu;
-
+	public GameObject difficultyMenu, startMenu, settingsMenu, loseMenu, winMenu;
 	public bool heldL, heldR, heldD;
 
 	public int ttimer = 0;
@@ -120,6 +122,9 @@ public class PlayerController : MonoBehaviour
         back.onClick.AddListener(BackClick);
 
         settings.onClick.AddListener(SClick);
+
+		mainMenuFromLose.onClick.AddListener(MainMenuClick);
+		mainMenuFromWin.onClick.AddListener(MainMenuClick);
 
         //spr = GetComponent<SpriteRenderer>();
 
@@ -139,14 +144,23 @@ public class PlayerController : MonoBehaviour
 
 		ttimer = 30;
 
+		// Death
 			if (health <= 0)
 			{
-			gameState = 0;
-            menuState = 5;
+			gameState = GAMESTATE_MENU;
+            menuState = LOSE_MENU;
             menuUpdate();
 
 		}
 
+	}
+
+	public void Win()
+	{
+        // Go to Win screen
+        gameState = GAMESTATE_MENU;
+		menuState = WIN_MENU;
+		menuUpdate();
 	}
 
 	public void hit(string punch){ }
@@ -260,7 +274,7 @@ public class PlayerController : MonoBehaviour
 
         center = !(heldL || heldR);
 
-        if (gameState == 1)
+        if (gameState == GAMESTATE_PLAYING)
 		{
             ui.SetActive(true);
             mui.SetActive(false);
@@ -347,9 +361,9 @@ public class PlayerController : MonoBehaviour
 	{
 		Debug.Log("play button clicked");
 
-		if (menuState == 1)
+		if (menuState == MAIN_MENU)
 		{
-			menuState = 2;
+			menuState = DIFFICULTY_MENU;
 		}
 
 		menuUpdate();
@@ -362,6 +376,7 @@ public class PlayerController : MonoBehaviour
         difficultyMenu.SetActive(false);
         settingsMenu.SetActive(false);
         loseMenu.SetActive(false);
+		winMenu.SetActive(false);
 
         switch (menuState)
         {
@@ -374,9 +389,12 @@ public class PlayerController : MonoBehaviour
             case 3:
                 settingsMenu.SetActive(true);
                 break;
-            case 5:
+            case LOSE_MENU:
                 loseMenu.SetActive(true);
                 break;
+			case WIN_MENU:
+				winMenu.SetActive(true);
+				break;
 
 
         }
@@ -385,11 +403,18 @@ public class PlayerController : MonoBehaviour
 
 
 
-    void SClick(){Debug.Log("settings button");if (menuState == 1)	{menuState = 3;}menuUpdate();}
-    void CClick() { Debug.Log("choose key button");   if (menuState == 3){menuState = 1;}menuUpdate();}
-	void StartClick(){Debug.Log("start game button");  if (menuState == 2){ gameState = 1;} menuUpdate();}
+    void SClick(){Debug.Log("settings button");if (menuState == MAIN_MENU)	{menuState = SETTINGS_MENU; }menuUpdate();}
+    void CClick() { Debug.Log("choose key button");   if (menuState == SETTINGS_MENU){menuState = MAIN_MENU; }menuUpdate();}
+	void StartClick(){Debug.Log("start game button");  if (menuState == DIFFICULTY_MENU) { gameState = GAMESTATE_PLAYING;} menuUpdate();}
 
-    void BackClick() { Debug.Log("back button"); if (menuState == 2) { menuState = 1; } menuUpdate(); }
+    void BackClick() { Debug.Log("back button"); if (menuState == DIFFICULTY_MENU) { menuState = MAIN_MENU; } menuUpdate(); }
+
+	void MainMenuClick()
+	{
+		Debug.Log("Main Menu button pressed.");
+		menuState = MAIN_MENU;
+		menuUpdate();
+	}
 
 
     void easyClick() {Debug.Log("easy"); difficulty = 1; }
