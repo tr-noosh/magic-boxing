@@ -1,4 +1,5 @@
 using System;
+
 using TMPro;
 using UnityEngine;
 
@@ -20,8 +21,9 @@ public class OpponentController : MonoBehaviour
 	public PlayerController player;
 
 	public Slider healthBar;
+    public strike_sender strikes;
 
-	private SpriteRenderer spr;
+    private SpriteRenderer spr;
 
 	public GameObject enemy;
 
@@ -47,7 +49,10 @@ public class OpponentController : MonoBehaviour
 	public bool low = true;
 	public bool high = true;
 
-	public BlockType blocking = BlockType.NONE;
+
+    public bool invincible = true;
+    public BlockType blocking = BlockType.NONE;
+	public bool blocked = false;
 
 	public int hitsRemaining = 4;
 	public float stunTime = 10.0f;
@@ -68,10 +73,14 @@ public class OpponentController : MonoBehaviour
 	public TextMeshProUGUI koText;
 	private Animator koAni;
 
-	public bool success = false;
+	public bool success,iv = false;
 
+	public int btimer = 300;
+    public int ftimer = 0;
 
-	void Awake()
+    public ParticleSystem glass;
+
+    void Awake()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
@@ -81,42 +90,119 @@ public class OpponentController : MonoBehaviour
     }
 
 	private void knockout() {
+
+		iv = true;
 		//knockedOut = true; // set by animation
 		roundKOs++;
 		knockouts++;
-		phase = Math.Max(2, knockouts); // phase # maxes out at 3
+		phase++;
 		
 		ani.SetTrigger("KO");
-		getupTime = Random.Range(1,4) + 2.0f*knockouts;
+		getupTime = 1;
 	}
 
-	public void damage(bool highPunch, bool rightPunch, float damage) {   // opponent taking damage. interrupt attacks and play animations
-        health -= damage;
-
-		if (health <= 0.0f) {
-			knockout(); return;
-		}
-
-        blocking = BlockType.NONE;
-
-		hitsRemaining--;
-		if (hitsRemaining > 0 && stunTime > 0.0f) {
-			stunned = true;
-			Debug.Log("gorp");
-		}
-		if (hitsRemaining == 1) { finalHit = true; }
-		if (hitsRemaining <= 0) { stunTime = 0.0f; }
-		ani.SetBool("stunned", stunned);
-		ani.SetBool("final", finalHit);
-
-		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
-	} 
-	public void block(bool highPunch, bool rightPunch) {}
-
-	private void checkHitting() {
-		if (!player.invincible)
+	public void damage(int dmg, bool rightPunch)
+	{   // opponent taking damage. interrupt attacks and play animations
+		if (blocking == BlockType.HIGH || blocking == BlockType.ALL)
 		{
-			if (player.center && hitCenter)
+
+			Debug.Log("block");
+
+			block(true, rightPunch);
+
+		}
+		else
+		{
+
+
+
+			if (btimer == 0)
+			{
+
+				//Debug.Log("damage");
+
+				if (knockouts > 0)
+				{
+                    btimer = 40;
+
+                    blocking = BlockType.NONE;
+
+
+					health -= dmg;
+
+					if (health <= 0.0f)
+					{
+						knockout(); return;
+					}
+
+
+					/*	if (hitsRemaining > 0 && stunTime > 0.0f)
+						{
+							stunned = true;
+							Debug.Log("gorp");
+						}
+
+						if (hitsRemaining == 1) { finalHit = true; }
+						if (hitsRemaining <= 0) {
+					*/
+
+					ani.SetBool("stunned", stunned);
+					ani.SetBool("final", finalHit);
+
+
+					if (hitsRemaining <= 0)
+					{
+
+                        btimer = 1000;
+                        blocking = BlockType.ALL;
+
+						ani.SetTrigger("left_flame");
+						ani.Play("flame_left");
+                       
+
+                    }
+					else
+					{
+						hitsRemaining--;
+
+
+						ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + ("Low"));
+
+					}
+
+
+				}
+				//ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
+			}
+		  }
+
+		}
+
+
+
+    
+
+	public void glass_break() { 
+       {
+            glass.Play();
+       }
+    }
+
+
+    public void block(bool highPunch, bool rightPunch) {
+
+        ani.SetTrigger(
+         (rightPunch ? "right" : "left") + ("_block")
+         );
+
+    }
+
+    private void checkHitting() {
+
+
+        if (!player.invincible)
+		{
+            if (player.center && hitCenter)
 			{
 				success = true;
 				player.damaged("center", currentMoveDamage);
@@ -135,13 +221,15 @@ public class OpponentController : MonoBehaviour
 			{
 				success = true;
 				player.damaged("right", currentMoveDamage);
+
 			}
-			ani.SetBool("success", success);
+			//ani.SetBool("success", success);
 		}
 	}
 
 	public void chooseMove() {
 
+		iv = false;
 		success = false;
 		ani.SetBool("success", success);
 		finalHit = false;
@@ -152,18 +240,28 @@ public class OpponentController : MonoBehaviour
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
 		currentMoveDamage = move.damageOnHit;
+
 		if (move.triggerName != null)
 		{
+
+
 			if (move.playRandomFromList > 0)
 			{
-				ani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
-                cloudani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
-                fireani.SetTrigger(move.triggerName[Random.Range(0, move.playRandomFromList)]);
+				int anim_r = Random.Range(0, move.triggerName.Length);
+
+				//strikes.move(anim_r);
+
+				ani.SetTrigger(move.triggerName[anim_r]);
+				strikeani.SetTrigger(move.triggerName[anim_r]);
+                cloudani.SetTrigger(move.triggerName[anim_r]);
+                fireani.SetTrigger(move.triggerName[anim_r]);
 
             }
 			else
 			{
-				ani.SetTrigger(move.triggerName[0]); //sends them to both but it shouldnt be an issue
+               // strikes.move(0);
+
+                ani.SetTrigger(move.triggerName[0]); 
                 strikeani.SetTrigger(move.triggerName[0]);
                 cloudani.SetTrigger(move.triggerName[0]);
                 fireani.SetTrigger(move.triggerName[0]);
@@ -177,29 +275,49 @@ public class OpponentController : MonoBehaviour
 
 	void Update() {
 
+      
+        if(btimer > 0)
+		{
 
-		if (player.gameState == 1)
+			--btimer;
+		}
+
+
+
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            ani.SetTrigger("right_block");
+        }
+     
+
+
+
+        if (player.gameState == 1)
 		{
 			spr.enabled = true;
 			enemy.SetActive(true);
 			healthBar.enabled = false;
 
-
-			ani.enabled = true;
+            invincible = true;
+            ani.enabled = true;
 			ani.SetTrigger("start");
 
-			int timer = 0;
+			
 
-			timer++;
+			ftimer++;
 
-			Debug.Log(timer);
 
 			healthBar.value = health / maxHealth;
-			if (timer == 500)
+
+			if (ftimer >= 500)
 			{
 
-			
-				if (stunned)
+                ftimer = 500;
+                invincible = false;
+                checkHitting();
+               
+
+                if (stunned)
 				{
 					if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
 					else
@@ -242,8 +360,13 @@ public class OpponentController : MonoBehaviour
 						koAni.SetTrigger("count");
 					}
 				}
-				checkHitting();
-			}
+
+
+            }
+		
+		
+			
+		
 		}
 		else
 		{

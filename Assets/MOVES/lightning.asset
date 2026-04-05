@@ -15,8 +15,8 @@ MonoBehaviour:
   triggerName:
   - left_strike
   - right_strike
-  playRandomFromList: 0
+  playRandomFromList: 2
   maxHits: 1
   maxTime: 10
-  damageOnHit: 10
-  phaseWeights: 32000000190000001e000000
+  damageOnHit: 30
+  phaseWeights: 00000000000000003c000000
