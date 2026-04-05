@@ -1375,7 +1375,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 150.00003, y: 132.14}
+  m_AnchoredPosition: {x: 117.7, y: 134.31}
   m_SizeDelta: {x: 119.05, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &242996027
@@ -1398,7 +1398,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: placeholder logo cuz i forgot to make one!!!
+  m_text: 'MAGIC:
+
+    THE RING'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
   m_sharedMaterial: {fileID: -8174186470556051139, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
@@ -1420,18 +1422,18 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
+  m_TextStyleHashCode: 97690656
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15.33
-  m_fontSizeBase: 15.33
+  m_fontSize: 26.1
+  m_fontSizeBase: 26.1
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1461,7 +1463,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -80.69343, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -3388,7 +3390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.81568635, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.2888713, g: 1, b: 0.10849059, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -9344,7 +9346,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150, y: 54.6}
+  m_AnchoredPosition: {x: 150, y: 65.7}
   m_SizeDelta: {x: 101.2, y: 40.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &840186944
@@ -15096,7 +15098,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4666667, g: 0.8980393, b: 1, a: 1}
+  m_Color: {r: 0.76233494, g: 0.19744569, b: 0.8207547, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -15795,9 +15797,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Keys
-
-'
+  m_text: Controls
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
   m_sharedMaterial: {fileID: -8174186470556051139, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
