@@ -241,7 +241,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 150, y: 147.43}
-  m_SizeDelta: {x: 119.05, y: 30}
+  m_SizeDelta: {x: 243.19, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &36475384
 MonoBehaviour:
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Layouts
+  m_text: Keymap select
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
   m_sharedMaterial: {fileID: -8174186470556051139, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
@@ -9726,7 +9726,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150, y: 65.7}
+  m_AnchoredPosition: {x: 150, y: 84.5}
   m_SizeDelta: {x: 101.2, y: 40.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &840186944
@@ -16295,7 +16295,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Controls
+  m_text: Keymaps
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
   m_sharedMaterial: {fileID: -8174186470556051139, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
@@ -16989,7 +16989,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 147.4, y: 33.42}
-  m_SizeDelta: {x: 119.04999, y: 30}
+  m_SizeDelta: {x: 1803.9, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1411931397
 MonoBehaviour:
@@ -17011,7 +17011,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: select with arrow keys.
+  m_text: Select preset using LEFT/RIGHT arrow keys.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
   m_sharedMaterial: {fileID: -8174186470556051139, guid: 719960c1c412e8c48b0ba8f5be6baa66, type: 2}
@@ -22762,6 +22762,7 @@ MonoBehaviour:
   jabHold: 0
   left_jab: 115
   right_jab: 108
+  keymapChooser: {fileID: 1790360926}
   play: {fileID: 840186944}
   settings: {fileID: 1819519057}
   cset: {fileID: 1278682822}
@@ -23770,7 +23771,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150, y: 26.7}
+  m_AnchoredPosition: {x: 150, y: 54.5}
   m_SizeDelta: {x: 117.9, y: 39.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1819519057
@@ -23980,7 +23981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.49411765, g: 0.9019608, b: 0.78809404, a: 0.8509804}
+  m_Color: {r: 0.07831969, g: 0.3773585, b: 0.2939727, a: 0.87058824}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -24202,7 +24203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Choose
+  m_text: 'Confirm
 
 '
   m_isRightToLeft: 0

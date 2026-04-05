@@ -98,6 +98,7 @@ public class PlayerController : MonoBehaviour
     public KeyCode left_jab = KeyCode.S;
 	public KeyCode right_jab = KeyCode.L;
 
+	public key_choose keymapChooser;
 
 
 	public UnityEngine.UI.Button play;
@@ -129,7 +130,13 @@ public class PlayerController : MonoBehaviour
         //spr = GetComponent<SpriteRenderer>();
 
 		menuUpdate();
-	}
+
+        // Set keymap so it matches the first option shown in settings menu.
+        // The Q/E + A/D + arrows layout was preferred by player feedback from the Alpha, and
+        // it was already the first option that initially shows in the settings menu. -- Chris
+        keyUpdate(keymapChooser.keys[keymapChooser.cycle]);
+        Debug.Log("Default keymap set.");
+    }
 
 
 	public void damaged(string zone, float damage) {

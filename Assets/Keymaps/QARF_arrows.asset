@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 390de929b5b62ad43a9cfbc9f57af5fe, type: 3}
-  m_Name: default
+  m_Name: QARF_arrows
   m_EditorClassIdentifier: 
-  left_punch: 100
-  right_punch: 107
-  left_dodge: 99
-  right_dodge: 109
-  low_dodge: 32
+  left_punch: 97
+  right_punch: 102
+  left_dodge: 276
+  right_dodge: 275
+  low_dodge: 274
   jabHold: 0
-  left_jab: 115
-  right_jab: 108
+  left_jab: 113
+  right_jab: 114
