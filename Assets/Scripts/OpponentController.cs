@@ -25,7 +25,10 @@ public class OpponentController : MonoBehaviour
 
     private SpriteRenderer spr;
 
-	public GameObject enemy;
+
+    public roundtext rounddf;
+
+    public GameObject enemy;
 
     private Animator ani;
 
@@ -50,7 +53,6 @@ public class OpponentController : MonoBehaviour
 	public bool high = true;
 
 
-    public bool invincible = true;
     public BlockType blocking = BlockType.NONE;
 	public bool blocked = false;
 
@@ -64,19 +66,23 @@ public class OpponentController : MonoBehaviour
 	public int roundKOs = 0;
 	public int phase = 0;
 
+	public int round = 0;
+
 	public bool stunned = false;
 	public bool finalHit = false;
 
 	public bool knockedOut = false;
-	public float koTimer = 0.0f;
+	public int koTimer = 0;
 	public float getupTime = 30.0f;
 	public TextMeshProUGUI koText;
 	private Animator koAni;
 
-	public bool success,iv = false;
+	public bool success,iv,pause = false;
 
 	public int btimer = 300;
     public int ftimer = 0;
+    public int ktimer = 1000;
+    public int ntimer = 0;
 
     public ParticleSystem glass;
 
@@ -87,27 +93,43 @@ public class OpponentController : MonoBehaviour
 		koAni = koText.gameObject.GetComponent<Animator>();
 
         ani.enabled = false;
+        enemy.SetActive(false);
+
+
     }
 
 	private void knockout() {
 
-        // Knockout + Round 2 appears broken, resulting in a softlock bug (no more moves
-        // from enemy, complete stalemate). I'm making it go directly to a win screen since we
-        // don't have much time left. Feel free to fix it if you find the time; otherwise,
-		// only one round is still a functional game for submission, even if unfortunate. -- Chris
-        /*
+     
 		iv = true;
-		//knockedOut = true; // set by animation
-		roundKOs++;
-		knockouts++;
-		phase++;
-		
-		ani.SetTrigger("KO");
-		getupTime = 1;
-		*/
+		//player.invincible = true;
 
-        player.Win();
-	}
+        round++;
+
+        if (round > 2)
+		{
+			// koText.text = "TKO";
+			//  koAni.SetTrigger("TKO");
+			//
+
+			ntimer = 1;
+          
+            //enabled = false;
+        }
+       
+    
+
+
+			ktimer = 0;
+
+        ani.SetTrigger("KO");
+        Debug.Log(round);
+      
+
+
+
+        //player.Win();
+    }
 
 	public void damage(int dmg, bool rightPunch)
 	{   // opponent taking damage. interrupt attacks and play animations
@@ -136,12 +158,18 @@ public class OpponentController : MonoBehaviour
                     blocking = BlockType.NONE;
 
 
+
+
 					health -= dmg;
+
+
+
 
 					if (health <= 0.0f)
 					{
 						knockout(); return;
 					}
+
 
 
 					/*	if (hitsRemaining > 0 && stunTime > 0.0f)
@@ -154,6 +182,7 @@ public class OpponentController : MonoBehaviour
 						if (hitsRemaining <= 0) {
 					*/
 
+
 					ani.SetBool("stunned", stunned);
 					ani.SetBool("final", finalHit);
 
@@ -165,7 +194,7 @@ public class OpponentController : MonoBehaviour
                         blocking = BlockType.ALL;
 
 						ani.SetTrigger("left_flame");
-						ani.Play("flame_left");
+						//ani.Play("flame_left");
                        
 
                     }
@@ -243,7 +272,7 @@ public class OpponentController : MonoBehaviour
 		finalHit = false;
 		ani.SetBool("final", finalHit);
 
-		EnemyMove move = RandomMove.SelectMove(moveList, phase);
+		EnemyMove move = RandomMove.SelectMove(moveList, round);
 
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
@@ -251,6 +280,8 @@ public class OpponentController : MonoBehaviour
 
 		if (move.triggerName != null)
 		{
+
+
 
 
 			if (move.playRandomFromList > 0)
@@ -281,110 +312,194 @@ public class OpponentController : MonoBehaviour
 	
 	private int lastNumber = 0;
 
-	void Update() {
-
-      
-        if(btimer > 0)
-		{
-
-			--btimer;
-		}
-
-
-
+	void Update()
+	{
         if (Input.GetKey(KeyCode.Alpha2))
         {
-            ani.SetTrigger("right_block");
-        }
-     
-
-
-
-        if (player.gameState == 1)
-		{
-			spr.enabled = true;
-			enemy.SetActive(true);
-			healthBar.enabled = false;
-
-            invincible = true;
-            ani.enabled = true;
-			ani.SetTrigger("start");
-
+			if (pause == true)
+			{
+				pause = false;
+			}
+			else {
 			
+			pause = true;	
+			
+			}
+        }
 
-			ftimer++;
 
+        if (!pause)
+		{
 
-			healthBar.value = health / maxHealth;
-
-			if (ftimer >= 500)
+            if (btimer > 0)
 			{
 
-                ftimer = 500;
-                invincible = false;
-                checkHitting();
-               
+				--btimer;
+			}
 
-                if (stunned)
-				{
-					if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
-					else
-					{
-						stunned = false;
-						ani.SetBool("stunned", stunned);
-					}
-				}
-				if (knockedOut)
-				{
-					koTimer += Time.deltaTime;
-					int countNum = (int)Math.Floor(koTimer);
-					if (roundKOs == 3)
-					{
-						koText.text = "TKO";
-						koAni.SetTrigger("TKO");
-						// TKO!!! end game
-						// try deactivating the script itself so no funny logic happens
-						enabled = false;
-						return;
-					}
-					else if (koTimer >= getupTime)
-					{
-						knockedOut = false;
-						ani.SetTrigger("RISE");
-						health = 70.0f; // something
-						koTimer = 0.0f;
-						lastNumber = 0;
-					}
-					else if (koTimer >= 11.0f)
-					{
-						koText.text = "KO!";
-						koAni.SetTrigger("KO");
-						// its over, knockout!!
-					}
-					else if (countNum < 11 && countNum > lastNumber && countNum < getupTime)
-					{
-						lastNumber = countNum;
-						koText.text = countNum.ToString();
-						koAni.SetTrigger("count");
-					}
-				}
+
+			if(ntimer >= 1)
+			{
+
+				ntimer++;
+
+
+			}
+
+            if (ntimer == 200)
+            {
+
+                 koText.text = "TKO";
+                 koAni.SetTrigger("TKO");
 
 
             }
-		
-		
+
+
+            if (ntimer == 800)
+            {
+
+				player.Win();
+
+
+            }
+
+
+
+
+            if (player.gameState == 1)
+			{
+				spr.enabled = true;
+				enemy.SetActive(true);
+				healthBar.enabled = false;
+
 			
-		
-		}
+				ani.enabled = true;
+				ani.SetTrigger("start");
+
+              
+                //rounddf.rounddown(1);
+
+
+                ftimer++;
+				ktimer++;
+
+
+				if (ktimer == 900)
+				{
+
+
+					if (round == 3)
+					{
+
+						//player.invincible = true;
+
+
+					}
+					else
+					{
+
+                        
+                        ani.SetTrigger("RISE");
+                        player.invincible = false;
+						health = 70.0f;
+
+                    }
+				}
+
+				healthBar.value = health / maxHealth;
+
+				if(ftimer == 490) {
+                    iv = false;
+								  }
+
+				if (ftimer >= 500)
+				{
+
+
+					ftimer = 500;
+					//invincible = false;
+					checkHitting();
+
+
+					if (ktimer >= 1000)
+					{
+
+
+						ktimer = 1000;
+
+
+
+					}
+
+
+					/*
+
+					if (stunned)
+					{
+						if (stunTime > 0.0f) { stunTime -= Time.deltaTime; }
+						else
+						{
+							stunned = false;
+							ani.SetBool("stunned", stunned);
+						}
+					}
+					if (knockedOut)
+					{
+						koTimer += Time.deltaTime;
+						int countNum = (int)Math.Floor(koTimer);
+						if (roundKOs == 3)
+						{
+							koText.text = "TKO";
+							koAni.SetTrigger("TKO");
+
+							enabled = false;
+							return;
+						}
+						else if (koTimer >= getupTime)
+						{
+							knockedOut = false;
+							ani.SetTrigger("RISE");
+							health = 70.0f; // something
+							koTimer = 0.0f;
+							lastNumber = 0;
+						}
+						else if (koTimer >= 11.0f)
+						{
+							koText.text = "KO!";
+							koAni.SetTrigger("KO");
+							// its over, knockout!!
+						}
+						else if (countNum < 11 && countNum > lastNumber && countNum < getupTime)
+						{
+							lastNumber = countNum;
+							koText.text = countNum.ToString();
+							koAni.SetTrigger("count");
+						}
+					}
+
+					*/
+				}
+
+
+			}
+            else
+            {
+
+                spr.enabled = false;
+                healthBar.enabled = false;
+                enemy.SetActive(false);
+                ani.ResetTrigger("left_strike");
+                ani.ResetTrigger("right_strike");
+            }
+        }
 		else
 		{
+           // spr.enabled = true;
+            ani.enabled = false;
 
-			spr.enabled = false;
-			healthBar.enabled = false;
-			enemy.SetActive(false);
-
-		}
-		
+        }
+	
 	}
 
 

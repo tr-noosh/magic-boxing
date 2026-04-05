@@ -100,7 +100,6 @@ public class PlayerController : MonoBehaviour
 
 	public key_choose keymapChooser;
 
-
 	public UnityEngine.UI.Button play;
 	public UnityEngine.UI.Button settings, cset;
 
@@ -137,7 +136,8 @@ public class PlayerController : MonoBehaviour
         // Set keymap so it matches the first option shown in settings menu.
         // The Q/E + A/D + arrows layout was preferred by player feedback from the Alpha, and
         // it was already the first option that initially shows in the settings menu. -- Chris
-        keyUpdate(keymapChooser.keys[keymapChooser.cycle]);
+
+       // keyUpdate(keymapChooser.keys[keymapChooser.cycle]);
         Debug.Log("Default keymap set.");
     }
 
@@ -166,8 +166,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	public void Win()
-	{
-        // Go to Win screen
+	{     
         gameState = GAMESTATE_MENU;
 		menuState = WIN_MENU;
 		menuUpdate();
@@ -220,7 +219,17 @@ public class PlayerController : MonoBehaviour
            );
 
 			Debug.Log((jab ? "Jab" : "Hook"));
-            opponent.damage(playerDamage, right);
+
+			if (opponent.iv == false)
+			{
+				opponent.damage(playerDamage, right);
+			}
+			else
+			{
+
+				health += 0.1f;
+
+			}
 
             if (jab)
             {
