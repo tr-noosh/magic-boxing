@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
 	public int menuState = MAIN_MENU;
 	public int difficulty = 2;
 
-    const int MAIN_MENU = 1, DIFFICULTY_MENU = 2, SETTINGS_MENU = 3, LOSE_MENU = 5, WIN_MENU = 6; // for cleaner code on menuState
+    const int MAIN_MENU = 1, DIFFICULTY_MENU = 2, SETTINGS_MENU = 3, LOSE_MENU = 5, WIN_MENU = 6, CREDITS_MENU = 7; // for cleaner code on menuState
 	const int GAMESTATE_MENU = 0, GAMESTATE_PLAYING = 1; // for cleaner code on gameState
 
     public int playerDamage = 10;
@@ -104,9 +104,9 @@ public class PlayerController : MonoBehaviour
 	public UnityEngine.UI.Button play;
 	public UnityEngine.UI.Button settings, cset;
 
-	public UnityEngine.UI.Button start, easy, mid, hard, back, mainMenuFromLose, mainMenuFromWin;
+	public UnityEngine.UI.Button start, easy, mid, hard, back, mainMenuFromLose, mainMenuFromWin, creditsButton, backFromCredits;
 
-	public GameObject difficultyMenu, startMenu, settingsMenu, loseMenu, winMenu;
+	public GameObject difficultyMenu, startMenu, settingsMenu, loseMenu, winMenu, creditsMenu;
 	public bool heldL, heldR, heldD;
 
 	public int ttimer = 0;
@@ -126,6 +126,9 @@ public class PlayerController : MonoBehaviour
 
 		mainMenuFromLose.onClick.AddListener(MainMenuClick);
 		mainMenuFromWin.onClick.AddListener(MainMenuClick);
+
+		creditsButton.onClick.AddListener(CreditsClick);
+		backFromCredits.onClick.AddListener(BackClick);
 
         //spr = GetComponent<SpriteRenderer>();
 
@@ -370,11 +373,22 @@ public class PlayerController : MonoBehaviour
 
 		if (menuState == MAIN_MENU)
 		{
-			menuState = DIFFICULTY_MENU;
+            // Difficulty system was never fully implemented; bypassing/skipping that menu.
+
+            //menuState = DIFFICULTY_MENU;
+            //menuUpdate();
+
+            StartClick(); // Reroute directly to start action.
 		}
 
-		menuUpdate();
 
+	}
+
+	void CreditsClick()
+	{
+		// Show credits
+		menuState = CREDITS_MENU;
+		menuUpdate();
 	}
 
 	void menuUpdate()
@@ -384,6 +398,7 @@ public class PlayerController : MonoBehaviour
         settingsMenu.SetActive(false);
         loseMenu.SetActive(false);
 		winMenu.SetActive(false);
+		creditsMenu.SetActive(false);
 
         switch (menuState)
         {
@@ -402,8 +417,9 @@ public class PlayerController : MonoBehaviour
 			case WIN_MENU:
 				winMenu.SetActive(true);
 				break;
-
-
+			case CREDITS_MENU:
+				creditsMenu.SetActive(true);
+				break;
         }
     }
 
@@ -412,11 +428,22 @@ public class PlayerController : MonoBehaviour
 
     void SClick(){Debug.Log("settings button");if (menuState == MAIN_MENU)	{menuState = SETTINGS_MENU; }menuUpdate();}
     void CClick() { Debug.Log("choose key button");   if (menuState == SETTINGS_MENU){menuState = MAIN_MENU; }menuUpdate();}
-	void StartClick(){Debug.Log("start game button");  if (menuState == DIFFICULTY_MENU) { gameState = GAMESTATE_PLAYING;} menuUpdate();}
+	
+	void StartClick()
+	{
+		Debug.Log("start game button");
+		gameState = GAMESTATE_PLAYING;
+		menuUpdate();
+	}
 
-    void BackClick() { Debug.Log("back button"); if (menuState == DIFFICULTY_MENU) { menuState = MAIN_MENU; } menuUpdate(); }
+    void BackClick()
+    {
+        Debug.Log("back button");
+		menuState = MAIN_MENU;
+		menuUpdate();
+    }
 
-	void MainMenuClick()
+    void MainMenuClick()
 	{
 		Debug.Log("Main Menu button pressed.");
 		menuState = MAIN_MENU;
