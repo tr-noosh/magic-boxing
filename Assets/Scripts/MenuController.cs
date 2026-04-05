@@ -1,24 +1,30 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum MenuState : int {
 	MAIN,
-	DIFFICULTY,
 	SETTINGS,
+	CREDITS,
 	LOSE,
 	WIN,
-	CREDITS,
 	GAMEPLAY
 }
+
 public class MenuController : MonoBehaviour
 {
-	public static keymap currentKeymap;
+	public static Scene menuScene;
+	public static Nullable<Scene> gameScene;
+	public static MenuController instance;
 
+	public static keymap currentKeymap;
+	
 	public MenuState menuState = MenuState.MAIN;
-	Dictionary<MenuState, GameObject> menuObj = new Dictionary<MenuState, GameObject>();
+	Dictionary<MenuState, GameObject> menus = new Dictionary<MenuState, GameObject>();
+	public GameObject mainObject, settingsObject, creditsObject, loseObject, winObject;
 	
 	// keys
 	int keyCycle = 1;
@@ -27,7 +33,27 @@ public class MenuController : MonoBehaviour
 	public Texture[] sprites;
 	public RawImage key_u, handL, handR;
 
-	void Start() {}
+	public RawImage scrn;
+
+	void Awake() {
+		instance = this;
+		menuScene = gameObject.scene;
+		SceneManager.sceneLoaded += onSceneLoaded;
+		menus.Add(MenuState.MAIN, mainObject);
+		menus.Add(MenuState.SETTINGS, settingsObject);
+		menus.Add(MenuState.CREDITS, creditsObject);
+		menus.Add(MenuState.LOSE, loseObject);
+		menus.Add(MenuState.WIN, winObject);
+		changeMenu(menuState);
+		currentKeymap = keymaps[keyCycle];
+	}
+
+	void onSceneLoaded(Scene scn, LoadSceneMode _) {
+		if (scn.name == "Game") { 
+			gameScene = scn;
+			SceneManager.SetActiveScene(scn);
+		}
+	}
 
 	void SettingsUpdate()
 	{
@@ -41,56 +67,77 @@ public class MenuController : MonoBehaviour
 		currentKeymap = keymaps[keyCycle];
 
 		switch (keyCycle) {
-            case 0:
-                handL.rectTransform.anchoredPosition = new Vector2(91.9f, 52.4f);
-                handR.rectTransform.anchoredPosition = new Vector2(181.5f, 52.4f);
-                break;
-
-            case 1:
-                handL.rectTransform.anchoredPosition = new Vector2(91.9f, 52.4f);
-                handR.rectTransform.anchoredPosition = new Vector2(231.8f, 39.2f);
-                break;
-
-            case 2:
-                handL.rectTransform.anchoredPosition = new Vector2(99.2f, 56.4f);
-                handR.rectTransform.anchoredPosition = new Vector2(231.8f, 39.2f);
-                break;
-        }
+			case 0:
+				handL.rectTransform.anchoredPosition = new Vector2(91.9f, 52.4f);
+				handR.rectTransform.anchoredPosition = new Vector2(181.5f, 52.4f);
+				break;
+			case 1:
+				handL.rectTransform.anchoredPosition = new Vector2(91.9f, 52.4f);
+				handR.rectTransform.anchoredPosition = new Vector2(231.8f, 39.2f);
+				break;
+			case 2:
+				handL.rectTransform.anchoredPosition = new Vector2(99.2f, 56.4f);
+				handR.rectTransform.anchoredPosition = new Vector2(231.8f, 39.2f);
+				break;
+		}
 	}
 
 	public void changeMenu(MenuState menu)
 	{
 		menuState = menu;
-		foreach (var m in menuObj) {
+		foreach (var m in menus) {
 			m.Value.SetActive(false);
 		}
 		if (menuState == MenuState.GAMEPLAY) {
 			startGame();
 		}
 		else {
-			menuObj[menu].SetActive(true);
+			menus[menu].SetActive(true);
 		}
 	}
 
-	void startGame() {
-
-	}
-	
 	void Update()
 	{
 		switch(menuState) {
-			case MenuState.MAIN: break;
-			case MenuState.DIFFICULTY: break;
 			case MenuState.SETTINGS: 
 				SettingsUpdate();
 				break;
-			case MenuState.CREDITS: break;
-			case MenuState.LOSE: break;
-			case MenuState.WIN: break;
-			case MenuState.GAMEPLAY: break;
+			default: 
+				break;
 		}
 	}
+
+	public void startGame() {
+		if (gameScene == null) {
+			SceneManager.LoadSceneAsync("Game", LoadSceneMode.Additive);
+		}
+	}
+	
+	private IEnumerator winRoutine() {
+		yield return new WaitForEndOfFrame();
+		scrn.texture = ScreenCapture.CaptureScreenshotAsTexture();
+		scrn.gameObject.SetActive(true);
+		if (gameScene != null) {
+			SceneManager.UnloadSceneAsync("Game");
+			gameScene = null;
+			SceneManager.SetActiveScene(menuScene);
+			changeMenu(MenuState.WIN);
+		}
+	}
+	private IEnumerator loseRoutine() {
+		yield return new WaitForEndOfFrame();
+		scrn.texture = ScreenCapture.CaptureScreenshotAsTexture();
+		scrn.gameObject.SetActive(true);
+		if (gameScene != null) {
+			SceneManager.UnloadSceneAsync("Game");
+			gameScene = null;
+			SceneManager.SetActiveScene(menuScene);
+			changeMenu(MenuState.LOSE);
+		}
+	}
+
 	public void goMain() {
+		scrn.gameObject.SetActive(false);
 		changeMenu(MenuState.MAIN);
 	}
 	public void goSettings() {
@@ -99,16 +146,12 @@ public class MenuController : MonoBehaviour
 	public void goCredits() {
 		changeMenu(MenuState.CREDITS);
 	}
-	public void goDifficulty() {
-		changeMenu(MenuState.CREDITS);
-	}
 	public void goPlay() {
 		changeMenu(MenuState.GAMEPLAY);
 	}
-	public void goLose() {
-		changeMenu(MenuState.LOSE);
-	}
-	public void goWin() {
-		changeMenu(MenuState.WIN);
-	}
+
+	void stopWin() { StartCoroutine(winRoutine()); }
+	void stopLose() { StartCoroutine(loseRoutine()); }
+	public static void Win() { instance.stopWin(); }
+	public static void Lose() { instance.stopLose(); }
 }

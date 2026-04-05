@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
 	public OpponentController opponent;
+	public StrikeSender sender;
 
 	public Slider healthBar;
 
@@ -36,37 +37,39 @@ public class PlayerController : MonoBehaviour
 	public float health = 100.0f;
 	public float damageStat = 5.0f;
 
-	void Awake()
-	{
+	keymap keymap;
+
+	void Awake() {
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
+		keymap = MenuController.currentKeymap;
+	}
+	void Start() {
+		spr = GetComponent<SpriteRenderer>();
+		ani = GetComponent<Animator>();
+		keymap = MenuController.currentKeymap;
 	}
 
 	void miss() { }
 	void blocked() { } 
 	public void damaged(string zone, float damage) {
+		resetAllTriggers();
 		health -= damage;
 		healthBar.value = health / maxHealth;
 		ani.SetTrigger("stun");
+		sender.dshake();
 	} 
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
+		if (!actionable) return;
 		bool highPunch = false;
 		bool rightPunch = false;
 
 		switch(punch) {
-			case "LEFTJAB":
-				highPunch = true; 
-				break;
-			case "RIGHTJAB":
-				rightPunch = true;
-				highPunch = true;
-				break;
-			case "LEFTHOOK":
-				break;
-			case "RIGHTHOOK":
-				rightPunch = true;
-				break;
+			case "LEFTHOOK": break;
+			case "RIGHTHOOK": rightPunch = true; break;
+			case "LEFTJAB": highPunch = true; break;
+			case "RIGHTJAB": rightPunch = true; highPunch = true; break;
 		}
 
 		if (highPunch) { // JAB
@@ -89,8 +92,19 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	private void startPunch(bool right) {
-		bool jab = Input.GetKey(KeyCode.UpArrow);
+	void resetAllTriggers(bool stun = false) {
+		ani.ResetTrigger("dodgeLeft");
+		ani.ResetTrigger("dodgeRight");
+		ani.ResetTrigger("dodgeDown");
+		ani.ResetTrigger("leftHook");
+		ani.ResetTrigger("rightHook");
+		ani.ResetTrigger("leftJab");
+		ani.ResetTrigger("rightJab");
+		if (stun) ani.ResetTrigger("stun");
+	}
+
+	private void startPunch(bool right, bool jab) {
+		resetAllTriggers();
 		ani.SetTrigger(
 			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
 		);
@@ -101,20 +115,26 @@ public class PlayerController : MonoBehaviour
 
 		if (!actionable) return;
 
-		if (Input.GetKey(KeyCode.LeftArrow)) {
+		if (Input.GetKey(keymap.left_dodge)) {
 			ani.SetTrigger("dodgeLeft");
 		} 
-		else if (Input.GetKey(KeyCode.RightArrow)) {
+		else if (Input.GetKey(keymap.right_dodge)) {
 			ani.SetTrigger("dodgeRight");
 		}
-		else if (Input.GetKey(KeyCode.DownArrow)) {
+		else if (Input.GetKey(keymap.low_dodge)) {
 			ani.SetTrigger("dodgeDown");
 		}
-		else if (Input.GetKey(KeyCode.Z)) {
-			startPunch(false);
+		else if (Input.GetKey(keymap.left_punch)) {
+			startPunch(false, false);
 		}
-		else if (Input.GetKey(KeyCode.X)) {
-			startPunch(true);
+		else if (Input.GetKey(keymap.right_punch)) {
+			startPunch(true, false);
+		}
+		else if (Input.GetKey(keymap.left_jab)) {
+			startPunch(false, true);
+		}
+		else if (Input.GetKey(keymap.right_jab)) {
+			startPunch(true, true);
 		}
 	}
 
