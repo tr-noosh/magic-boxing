@@ -11,8 +11,8 @@ public class PlayerController : MonoBehaviour
 
 	public Slider healthBar;
 
-	private SpriteRenderer spr;
-	private Animator ani;
+	public SpriteRenderer spr;
+	public Animator ani;
 
 	public TextMeshProUGUI scoreText;
 

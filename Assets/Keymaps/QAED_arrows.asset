@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 390de929b5b62ad43a9cfbc9f57af5fe, type: 3}
+  m_Name: QAED_arrows
+  m_EditorClassIdentifier: 
+  left_punch: 97
+  right_punch: 100
+  left_dodge: 276
+  right_dodge: 275
+  low_dodge: 274
+  jabHold: 0
+  left_jab: 113
+  right_jab: 101
