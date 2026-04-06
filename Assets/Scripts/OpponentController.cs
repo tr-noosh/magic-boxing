@@ -58,6 +58,7 @@ public class OpponentController : MonoBehaviour
 	public float getupTime = 30.0f;
 	public TextMeshProUGUI koText;
 	private Animator koAni;
+	public ParticleSystem glass;
 
 	public bool success = false;
 
@@ -80,7 +81,7 @@ public class OpponentController : MonoBehaviour
 
 	public void damage(bool highPunch, bool rightPunch, float damage) {   // opponent taking damage. interrupt attacks and play animations
         health -= damage;
-
+		glass.Play();
 		if (health <= 0.0f) {
 			knockout(); return;
 		}
@@ -97,7 +98,10 @@ public class OpponentController : MonoBehaviour
 		ani.SetBool("final", finalHit);
 		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
 	} 
-	public void block(bool highPunch, bool rightPunch) {}
+	public void block(bool highPunch, bool rightPunch) {
+		// block high and block low animations?
+		//ani.SetTrigger((highPunch ? "hi" : "low") + "_block");
+	}
 
 	private void checkHitting() {
 		if (!player.invincible)
@@ -132,7 +136,9 @@ public class OpponentController : MonoBehaviour
 		finalHit = false;
 		ani.SetBool("final", finalHit);
 
+		
 		EnemyMove move = RandomMove.SelectMove(moveList, phase);
+		if (player.knockedOut) move = moveList[0]; // Idle
 
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
@@ -158,6 +164,7 @@ public class OpponentController : MonoBehaviour
 				koText.text = "TKO";
 				koAni.SetTrigger("TKO");
 				// TKO!!! end game
+				MenuController.Win();
 				// try deactivating the script itself so no funny logic happens
 				enabled = false;
 				return;
@@ -173,6 +180,9 @@ public class OpponentController : MonoBehaviour
 				koText.text = "KO!";
 				koAni.SetTrigger("KO");
 				// its over, knockout!!
+				MenuController.Win();
+				// try deactivating the script itself so no funny logic happens
+				enabled = false;
 			}
 			else if (countNum < 11 && countNum > lastNumber && countNum < getupTime) {
 				lastNumber = countNum;

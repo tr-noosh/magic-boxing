@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
@@ -31,6 +34,9 @@ public class PlayerController : MonoBehaviour
 	public bool knockedOut = false;
 	public float koTimer = 0.0f;
 	public float getupProgress = 0.0f;
+	public TextMeshProUGUI koText;
+	private Animator koAni;
+	public SpriteRenderer damageOverlay;
 
 	[Header("Stats")]
 	public float maxHealth = 100.0f;
@@ -42,26 +48,45 @@ public class PlayerController : MonoBehaviour
 	void Awake() {
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
+		koAni = koText.gameObject.GetComponent<Animator>();
 		keymap = MenuController.currentKeymap;
 	}
 	void Start() {
 		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
+		koAni = koText.gameObject.GetComponent<Animator>();
 		keymap = MenuController.currentKeymap;
 	}
 
 	void miss() { }
-	void blocked() { } 
+	void blocked(bool rightPunch) {
+		resetAllTriggers();
+		ani.SetTrigger("blocked");
+	} 
+
+	private void knockout() {
+		//knockedOut = true; // set by animation
+		roundKOs++;
+		knockouts++;
+		getupProgress = Random.Range(1,4) + 2.0f*knockouts;
+	}
 	public void damaged(string zone, float damage) {
 		resetAllTriggers();
 		health -= damage;
 		healthBar.value = health / maxHealth;
-		ani.SetTrigger("stun");
 		sender.dshake();
-	} 
+		if (health <= 0) {
+			ani.SetTrigger((zone != "left") ? "knockoutR" : "knockoutL");
+			knockout();
+		}
+		else {
+			ani.SetTrigger((zone != "left") ? "stunR" : "stunL");
+		}
+		damageOverlay.color = new Color(1f, 0f, 0f, 1f);
+	}
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
-		if (!actionable) return;
+		if (invincible) return;
 		bool highPunch = false;
 		bool rightPunch = false;
 
@@ -74,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
 		if (highPunch) { // JAB
 			if (!opponent.high) { miss(); }
-			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
+			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(rightPunch); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch, damageStat);
@@ -83,7 +108,7 @@ public class PlayerController : MonoBehaviour
 		}
 		else { // HOOK
 			if (!opponent.low) { miss(); }
-			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(); }
+			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(rightPunch); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch, damageStat);
@@ -100,7 +125,10 @@ public class PlayerController : MonoBehaviour
 		ani.ResetTrigger("rightHook");
 		ani.ResetTrigger("leftJab");
 		ani.ResetTrigger("rightJab");
-		if (stun) ani.ResetTrigger("stun");
+		if (stun) {
+			ani.ResetTrigger("stunL");
+			ani.ResetTrigger("stunR");
+		}
 	}
 
 	private void startPunch(bool right, bool jab) {
@@ -109,9 +137,46 @@ public class PlayerController : MonoBehaviour
 			(right ? "right" : "left") + (jab ? "Jab" : "Hook")
 		);
 	}
-
+	
+	private int lastNumber = 0;
 	void Update() {
 		updateScoreText();
+
+		if (damageOverlay.color.a > 0.0f) {
+			damageOverlay.color = new Color(1f, 0f, 0f, Math.Max(0.0f, damageOverlay.color.a - Time.deltaTime*2.0f));
+		}
+
+		if (knockedOut) {
+			koTimer += Time.deltaTime;
+			int countNum = (int)Math.Floor(koTimer);
+			if (roundKOs == 3) {
+				koText.text = "TKO";
+				koAni.SetTrigger("TKO");
+				// TKO!!! end game
+				MenuController.Lose();
+				// try deactivating the script itself so no funny logic happens
+				enabled = false;
+				return;
+			}
+			else if (koTimer >= getupProgress) {
+				ani.SetTrigger("RISE");
+				health = 70.0f; // something
+				koTimer = 0.0f;
+				lastNumber = 0;
+			}
+			else if (koTimer >= 11.0f) {
+				koText.text = "KO!";
+				koAni.SetTrigger("KO");
+				// its over, knockout!!
+				MenuController.Lose();
+				enabled = false;
+			}
+			else if (countNum < 11 && countNum > lastNumber && countNum < getupProgress) {
+				lastNumber = countNum;
+				koText.text = countNum.ToString();
+				koAni.SetTrigger("count");
+			}
+		}
 
 		if (!actionable) return;
 
