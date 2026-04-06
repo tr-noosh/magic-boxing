@@ -104,7 +104,7 @@ public class OpponentController : MonoBehaviour
 	}
 
 	private void checkHitting() {
-		if (!player.invincible)
+		if (!player.invincible && !player.knockedOut && player.health > 0.0f)
 		{
 			if (player.center && hitCenter)
 			{

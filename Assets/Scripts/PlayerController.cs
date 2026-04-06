@@ -64,20 +64,21 @@ public class PlayerController : MonoBehaviour
 		ani.SetTrigger("blocked");
 	} 
 
-	private void knockout() {
+	private void knockout(bool rightPunch) {
 		//knockedOut = true; // set by animation
 		roundKOs++;
 		knockouts++;
 		getupProgress = Random.Range(1,4) + 2.0f*knockouts;
+		ani.SetTrigger(rightPunch ? "knockoutR" : "knockoutL");
 	}
 	public void damaged(string zone, float damage) {
+		if (health <= 0.0f || knockedOut) return;
 		resetAllTriggers();
 		health -= damage;
 		healthBar.value = health / maxHealth;
 		sender.dshake();
 		if (health <= 0) {
-			ani.SetTrigger((zone != "left") ? "knockoutR" : "knockoutL");
-			knockout();
+			knockout(zone != "left");
 		}
 		else {
 			ani.SetTrigger((zone != "left") ? "stunR" : "stunL");
