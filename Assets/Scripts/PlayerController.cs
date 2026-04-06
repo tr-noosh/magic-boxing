@@ -44,7 +44,11 @@ public class PlayerController : MonoBehaviour
 	private SpriteRenderer spr;
 	public GameObject gloves;
 
-	public Animator ani;
+
+
+    public Animator ani;
+
+
 	public Animator oppani;
 
 	public TextMeshProUGUI scoreText;
@@ -137,7 +141,7 @@ public class PlayerController : MonoBehaviour
         // The Q/E + A/D + arrows layout was preferred by player feedback from the Alpha, and
         // it was already the first option that initially shows in the settings menu. -- Chris
 
-       // keyUpdate(keymapChooser.keys[keymapChooser.cycle]);
+        keyUpdate(keymapChooser.keys[keymapChooser.cycle]);
         Debug.Log("Default keymap set.");
     }
 
@@ -148,9 +152,9 @@ public class PlayerController : MonoBehaviour
 
         healthBar.value = health / maxHealth;
 
-		ani.SetTrigger("stun");
+      
 
-		ca.dshake();
+        ca.dshake();
 
 		ttimer = 30;
 
@@ -206,12 +210,12 @@ public class PlayerController : MonoBehaviour
         {
             if (jab)
             {
-                playerDamage = 2;
+				playerDamage = 1;
 
             }
             else
             {
-                playerDamage = 5;
+                playerDamage = 3;
 
             }
            
@@ -282,7 +286,7 @@ public class PlayerController : MonoBehaviour
         if (ttimer == 0)
         {
 
-			ani.ResetTrigger("stun");
+			//ani.ResetTrigger("stun");
           //  health -= damage_t;
         }
 

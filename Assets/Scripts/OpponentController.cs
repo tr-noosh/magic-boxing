@@ -21,6 +21,7 @@ public class OpponentController : MonoBehaviour
 	public PlayerController player;
 
 	public Slider healthBar;
+    public Animator rani;
     public strike_sender strikes;
 
     private SpriteRenderer spr;
@@ -239,27 +240,35 @@ public class OpponentController : MonoBehaviour
 
         if (!player.invincible)
 		{
-            if (player.center && hitCenter)
+			if (player.center && hitCenter)
 			{
 				success = true;
 				player.damaged("center", currentMoveDamage);
+				rani.SetTrigger("dmg");
 			}
 			else if (player.low && hitLow)
 			{
 				success = true;
 				player.damaged("low", currentMoveDamage);
+				rani.SetTrigger("dmg");
 			}
 			else if (player.left && hitLeft)
 			{
 				success = true;
 				player.damaged("left", currentMoveDamage);
+				rani.SetTrigger("dmg");
 			}
 			else if (player.right && hitRight)
 			{
 				success = true;
 				player.damaged("right", currentMoveDamage);
-
+				rani.SetTrigger("dmg");
 			}
+			else
+			{
+                rani.ResetTrigger("dmg");
+
+            }
 			//ani.SetBool("success", success);
 		}
 	}
