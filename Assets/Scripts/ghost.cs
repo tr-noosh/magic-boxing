@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ghost : MonoBehaviour
@@ -6,6 +7,7 @@ public class ghost : MonoBehaviour
 	public float ghostLifetime = 0.5f;
 	public Color ghostColor = new Color(1f, 1f, 1f, 0.5f);
 
+	public PlayerController player;
 	public OpponentController opponent;
 
 	private float timer;
@@ -31,6 +33,28 @@ public class ghost : MonoBehaviour
 		timer = 0.0f;
 	}
 
+	private void checkHitting() {
+		if (player.invincible) { return; }
+		if (player.knockedOut) { return; }
+		if (player.health <= 0.0f) { return; }
+		if (player.center && (left || right))
+		{
+			player.damaged("center", opponent.currentMoveDamage);
+		}
+		else if (player.low && low)
+		{
+			player.damaged("low", opponent.currentMoveDamage);
+		}
+		else if (player.left && left)
+		{
+			player.damaged("left", opponent.currentMoveDamage);
+		}
+		else if (player.right && right)
+		{
+			player.damaged("right", opponent.currentMoveDamage);
+		}
+	}
+
 	void Update()
 	{
 		if (ghosti) {
@@ -43,10 +67,7 @@ public class ghost : MonoBehaviour
 		}
 		if (hitting) {
 			Debug.Log(gameObject.name);
-			opponent.hitLeft = left;
-			opponent.hitRight = right;
-			opponent.hitCenter = left || right;
-			opponent.hitLow = low;
+			checkHitting();
 		}
 	}
 

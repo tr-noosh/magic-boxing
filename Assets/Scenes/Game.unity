@@ -453,6 +453,7 @@ MonoBehaviour:
   spawnRate: 0.05
   ghostLifetime: 0.5
   ghostColor: {r: 1, g: 1, b: 1, a: 0.5}
+  player: {fileID: 0}
   opponent: {fileID: 450346912}
   ghostSize: 0.2
   hitting: 0
@@ -846,6 +847,7 @@ MonoBehaviour:
   spawnRate: 0.05
   ghostLifetime: 0.5
   ghostColor: {r: 1, g: 1, b: 1, a: 0.5}
+  player: {fileID: 0}
   opponent: {fileID: 450346912}
   ghostSize: 0.2
   hitting: 0
@@ -2460,6 +2462,7 @@ MonoBehaviour:
   spawnRate: 0.05
   ghostLifetime: 0.5
   ghostColor: {r: 1, g: 1, b: 1, a: 0.5}
+  player: {fileID: 1645927943}
   opponent: {fileID: 450346912}
   ghostSize: 0.2
   hitting: 0
@@ -7595,6 +7598,7 @@ MonoBehaviour:
   spawnRate: 0.1
   ghostLifetime: 0.5
   ghostColor: {r: 0.49411765, g: 1, b: 1, a: 0.5}
+  player: {fileID: 1645927943}
   opponent: {fileID: 450346912}
   ghostSize: 0.5
   hitting: 0
