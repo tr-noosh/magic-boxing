@@ -162,6 +162,7 @@ public class PlayerController : MonoBehaviour
 			else if (koTimer >= getupProgress) {
 				ani.SetTrigger("RISE");
 				health = 70.0f; // something
+				healthBar.value = health / maxHealth;
 				koTimer = 0.0f;
 				lastNumber = 0;
 			}
