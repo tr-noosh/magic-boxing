@@ -15,5 +15,5 @@ MonoBehaviour:
   triggerName: flameLeft
   maxHits: 6
   maxTime: 8
-  damageOnHit: 9
+  damageOnHit: 12
   phaseWeights: 000000002800000032000000

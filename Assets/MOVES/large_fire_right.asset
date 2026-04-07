@@ -15,5 +15,5 @@ MonoBehaviour:
   triggerName: firepunchRight
   maxHits: 8
   maxTime: 10
-  damageOnHit: 12
+  damageOnHit: 15
   phaseWeights: 000000001400000028000000

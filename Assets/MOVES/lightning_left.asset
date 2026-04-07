@@ -15,5 +15,5 @@ MonoBehaviour:
   triggerName: strikeLeft
   maxHits: 10
   maxTime: 12
-  damageOnHit: 15
-  phaseWeights: 00000000000000001e000000
+  damageOnHit: 16
+  phaseWeights: 000000000000000019000000

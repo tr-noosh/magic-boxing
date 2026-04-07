@@ -16,4 +16,4 @@ MonoBehaviour:
   maxHits: 0
   maxTime: 0
   damageOnHit: 0
-  phaseWeights: 4b0000003c0000002d000000
+  phaseWeights: 3c0000002800000019000000

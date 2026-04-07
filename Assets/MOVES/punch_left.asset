@@ -15,5 +15,5 @@ MonoBehaviour:
   triggerName: punchLeft
   maxHits: 5
   maxTime: 6
-  damageOnHit: 6
+  damageOnHit: 10
   phaseWeights: 280000001900000005000000
