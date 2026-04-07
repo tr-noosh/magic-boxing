@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 	public float getupProgress = 0.0f;
 	public TextMeshProUGUI koText;
 	private Animator koAni;
-	public SpriteRenderer damageOverlay;
+	public Image damageOverlay;
 
 	[Header("Stats")]
 	public float maxHealth = 100.0f;
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	void miss() { }
-	void blocked(bool rightPunch) {
+	void blocked(bool highPunch) {
 		resetAllTriggers();
 		ani.SetTrigger("blocked");
 	} 
@@ -72,18 +72,18 @@ public class PlayerController : MonoBehaviour
 		ani.SetTrigger(rightPunch ? "knockoutR" : "knockoutL");
 	}
 	public void damaged(string zone, float damage) {
-		if (health <= 0.0f || knockedOut) return;
+		if (health <= 0.0f || knockedOut) { return; }
 		resetAllTriggers();
 		health -= damage;
 		healthBar.value = health / maxHealth;
-		sender.dshake();
-		if (health <= 0) {
+		sender.shake();
+		if (health <= 0.0f) {
 			knockout(zone != "left");
 		}
 		else {
 			ani.SetTrigger((zone != "left") ? "stunR" : "stunL");
 		}
-		damageOverlay.color = new Color(1f, 0f, 0f, 1f);
+		damageOverlay.color = new Color(0.8f, 0f, 0f, 0.6f);
 	}
 
 	public void hit(string punch) { // Called by the animation played by beginPunch()
@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
 		if (highPunch) { // JAB
 			if (!opponent.high) { miss(); }
-			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(rightPunch); }
+			else if (opponent.blocking == BlockType.HIGH || opponent.blocking == BlockType.ALL) { opponent.block(highPunch); blocked(rightPunch); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch, damageStat);
@@ -109,7 +109,7 @@ public class PlayerController : MonoBehaviour
 		}
 		else { // HOOK
 			if (!opponent.low) { miss(); }
-			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch, rightPunch); blocked(rightPunch); }
+			else if (opponent.blocking == BlockType.LOW || opponent.blocking == BlockType.ALL) { opponent.block(highPunch); blocked(rightPunch); }
 			else if (opponent.center) { opponent.damage(highPunch, rightPunch, damageStat); }
 			else if ((rightPunch && opponent.right) || (!rightPunch && opponent.left)) {
 				opponent.damage(highPunch, rightPunch, damageStat);
@@ -144,10 +144,10 @@ public class PlayerController : MonoBehaviour
 		updateScoreText();
 
 		if (damageOverlay.color.a > 0.0f) {
-			damageOverlay.color = new Color(1f, 0f, 0f, Math.Max(0.0f, damageOverlay.color.a - Time.deltaTime*2.0f));
+			damageOverlay.color = new Color(0.8f, 0f, 0f, Math.Max(0.0f, damageOverlay.color.a - Time.deltaTime*1.5f));
 		}
 
-		if (knockedOut) {
+		if (knockedOut && health <= 0.0f) {
 			koTimer += Time.deltaTime;
 			int countNum = (int)Math.Floor(koTimer);
 			if (roundKOs == 3) {

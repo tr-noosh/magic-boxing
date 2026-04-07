@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ea6afdf78021b1428427984f67fea19, type: 3}
   m_Name: lightning_right
   m_EditorClassIdentifier: 
-  triggerName: right_strike
-  maxHits: 1
-  maxTime: 10
-  damageOnHit: 30
+  triggerName: strikeRight
+  maxHits: 10
+  maxTime: 12
+  damageOnHit: 15
   phaseWeights: 00000000000000001e000000

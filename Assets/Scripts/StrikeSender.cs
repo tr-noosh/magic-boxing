@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,30 +15,32 @@ public class StrikeSender : MonoBehaviour
 	
 	// seems to manage opponent hit particle effect, move to opponent
 
-	public float shakeLength = 0.5f; // default shake duration
-	public float shakeSize = 0.3f;
-	public float shakeSpeed = 1.0f;
+	public float shakeLength = 0.25f; // default shake duration
+	public float shakeSize = 0.5f;
 
-	Vector3 iPos = new Vector3(0f, 2f, -4.5f);
+	Vector3 initPos = new Vector3(0f, 2f, -4.5f);
 	float shakeTime = 0.0f;
 
-	Camera cam;
+	public Camera cam;
 
 	void Awake()
 	{
 		cam = Camera.main;
-		iPos = cam.transform.position;
+		initPos = cam.transform.position;
 	}
 
-	void Update()
+
+	int i = 0;
+	void FixedUpdate()
 	{
+		i = (i + 1) % 2;
+		if (i != 0) return;
 		if (shakeTime > 0.0f) {
-			cam.transform.localPosition = iPos + Random.insideUnitSphere * shakeSize;
-			shakeTime -= Time.deltaTime * shakeSpeed;
+			cam.transform.position = initPos + UnityEngine.Random.insideUnitSphere * shakeSize * Mathf.Pow(shakeTime/shakeLength,3);
+			shakeTime -= Time.fixedDeltaTime;
 		}
 		else {
-			shakeTime = 0.0f;
-			cam.transform.localPosition = iPos;
+			cam.transform.position = initPos;
 		}
 	}
 
@@ -50,15 +53,7 @@ public class StrikeSender : MonoBehaviour
 		}
 	}
 
-	public void shake() { // unused
-		shakeLength = 0.3f;
-		shakeSize = 0.5f;
-		shakeTime = shakeLength;
-	}
-
-	public void dshake() {
-		shakeLength = 0.1f;
-		shakeSize = 0.2f;
+	public void shake() {
 		shakeTime = shakeLength;
 	}
 

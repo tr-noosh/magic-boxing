@@ -59,12 +59,14 @@ public class OpponentController : MonoBehaviour
 	public TextMeshProUGUI koText;
 	private Animator koAni;
 	public ParticleSystem glass;
+	public Animator strikeAni;
+	public Animator cloudAni;
+	public Animator fireAni;
 
 	public bool success = false;
 
 	void Awake()
 	{
-		spr = GetComponent<SpriteRenderer>();
 		ani = GetComponent<Animator>();
 		koAni = koText.gameObject.GetComponent<Animator>();
 	}
@@ -85,7 +87,10 @@ public class OpponentController : MonoBehaviour
 		if (health <= 0.0f) {
 			knockout(); return;
 		}
-
+		cancelMove();
+		hitCenter = false;
+		hitLeft = false;
+		hitRight = false;
         blocking = BlockType.NONE;
 		hitsRemaining--;
 		if (hitsRemaining > 0 && stunTime > 0.0f) {
@@ -98,36 +103,44 @@ public class OpponentController : MonoBehaviour
 		ani.SetBool("final", finalHit);
 		ani.SetTrigger("ouch" + (rightPunch ? "Right" : "Left") + (highPunch ? "High" : "Low"));
 	} 
-	public void block(bool highPunch, bool rightPunch) {
-		// block high and block low animations?
-		//ani.SetTrigger((highPunch ? "hi" : "low") + "_block");
+	public void block(bool highPunch) {
+		cancelMove();
+		hitCenter = false;
+		hitLeft = false;
+		hitRight = false;
+		left = false;
+		right = false;
+		center = true;
+		low = true;
+		high = true;
+		ani.SetTrigger("block" + (highPunch ? "High" : "Low"));
 	}
 
 	private void checkHitting() {
-		if (!player.invincible && !player.knockedOut && player.health > 0.0f)
+		if (player.invincible) { return; }
+		if (player.knockedOut) { return; }
+		if (player.health <= 0.0f) { return; }
+		if (player.center && hitCenter)
 		{
-			if (player.center && hitCenter)
-			{
-				success = true;
-				player.damaged("center", currentMoveDamage);
-			}
-			else if (player.low && hitLow)
-			{
-				success = true;
-				player.damaged("low", currentMoveDamage);
-			}
-			else if (player.left && hitLeft)
-			{
-				success = true;
-				player.damaged("left", currentMoveDamage);
-			}
-			else if (player.right && hitRight)
-			{
-				success = true;
-				player.damaged("right", currentMoveDamage);
-			}
-			ani.SetBool("success", success);
+			success = true;
+			player.damaged("center", currentMoveDamage);
 		}
+		else if (player.low && hitLow)
+		{
+			success = true;
+			player.damaged("low", currentMoveDamage);
+		}
+		else if (player.left && hitLeft)
+		{
+			success = true;
+			player.damaged("left", currentMoveDamage);
+		}
+		else if (player.right && hitRight)
+		{
+			success = true;
+			player.damaged("right", currentMoveDamage);
+		}
+		ani.SetBool("success", success);
 	}
 
 	public void chooseMove() {
@@ -143,8 +156,22 @@ public class OpponentController : MonoBehaviour
 		hitsRemaining = move.maxHits;
 		stunTime = move.maxTime;
 		currentMoveDamage = move.damageOnHit;
-		if (move.triggerName != "") ani.SetTrigger(move.triggerName);
-		
+		if (move.triggerName != "") {
+			if (move.triggerName != "idle") ani.SetTrigger(move.triggerName);
+			if (move.triggerName.StartsWith("strike")) {
+				strikeAni.SetTrigger(move.triggerName);
+				cloudAni.SetTrigger(move.triggerName);
+			}
+			if (move.triggerName.StartsWith("firepunch")) {
+				fireAni.SetTrigger(move.triggerName);
+			}
+		}
+	}
+
+	public void cancelMove() {
+		strikeAni.SetTrigger("cancel");
+		cloudAni.SetTrigger("cancel");
+		fireAni.SetTrigger("cancel");
 	}
 	
 	private int lastNumber = 0;
@@ -157,7 +184,7 @@ public class OpponentController : MonoBehaviour
 				ani.SetBool("stunned", stunned);
 			}
 		}
-		if (knockedOut) {
+		if (knockedOut && health <= 0.0f) {
 			koTimer += Time.deltaTime;
 			int countNum = (int)Math.Floor(koTimer);
 			if (roundKOs == 3) {
@@ -190,7 +217,6 @@ public class OpponentController : MonoBehaviour
 				koAni.SetTrigger("count");
 			}
 		}
-
 		checkHitting();
 	}
 
@@ -198,7 +224,7 @@ public class OpponentController : MonoBehaviour
 	Color activeColor = new(.33f, .80f, .16f, 1f); Color inactiveColor = new(.61f, .61f, .61f, 1f); Color blockColor = new(.8f, .8f, .3f, 1f);
 	Vector3 flat = new(.2f, .2f, 0.01f); Vector3 flatWide = new(.8f, .12f, 0.01f);
 	private void OnDrawGizmos() {
-		if (!spr) {spr = GetComponent<SpriteRenderer>();}
+		if (!spr) {spr = GameObject.Find("Hat").GetComponent<SpriteRenderer>();}
 		Gizmos.matrix = Matrix4x4.TRS(spr.bounds.center, Camera.current.transform.rotation, Vector3.one);
 		Vector3 above = new Vector3(0, spr.bounds.extents.y + .25f, 0);
 
